@@ -1,0 +1,69 @@
+﻿@model ASP.Models.Home.HomeRazorPageModel;
+@* Here we declare the model's type. The data itself is available via Razor field @Model *@
+@{
+    ViewData["Title"] = "About Razor";
+}
+
+<div class="text-center">
+    <h1 class="display-4">About Razor</h1>
+
+</div>
+
+<p>
+    Razor is a technology that aims to combine a programming language and a markup language. Its base is &commat; that is substituted by the &amp;commant; entity in HTML
+</p>
+
+<h2>Expressions</h2>
+<p>Expressions are the commands that have result. In the sense of Razor this result is substituted in the place where it was mentioned.
+    Syntax:
+    <code>&commat;(expression)</code>, e.g.
+    <code>&commat;(2 + 3) = @(2 + 3)</code>
+    In that sense, the construction <code>&commat;()</code> can be compared to the output operator <code>print(expression)</code>
+</p>
+
+<h2>Statements</h2>
+<p>
+    Statements do not have visual results (nothing is printed). Declared via syntax:
+    <code>&commat;{statements}</code>, e.g.
+    <pre>
+        &commat;{
+        int x = 10;
+        var random = new Random();
+        }
+    </pre>
+</p>
+@{
+    int x = 10;
+    var random = new Random();
+}
+<p>
+    Short form for expressions <code>&commat;expression</code> is allowed 
+    if the expressions do not have separators, like<br/>
+    <code>&commat;x = @x</code><br/>
+    <code>&commat;random.Next() = @random.Next()</code><br/>
+    <code>&commat;x + 1 = @x + 1</code><br/>
+</p>
+
+<h2>Control Statements</h2>
+<p>
+    Condition and cycle operators: &commat;if{}, &commat;if{ }else{ }, &commat;switch, &commat;for, &commat;while, &commat;foreach, ...
+</p>
+@{
+    //string[] arr = { "Item I", "Item II", "Item III", "Item IV", "Item V" };
+    //string[] arr = (string[])ViewData["arr"]!;
+    //string[] arr = Model.Arr;
+
+}
+@for (int i = 0; i < Model.Arr.Length; i++)
+{
+    if(i % 2 == 0)
+    {
+        <i>@Model.Arr[i]</i>
+        <br />
+    }
+    else
+    {
+        <b>@Model.Arr[i]</b>
+        <br />
+    }
+}
