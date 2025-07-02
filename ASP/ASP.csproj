@@ -6,4 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Resource Include="Screenshots\HW-1\Table.png" />
+    <Resource Include="Screenshots\HW-1\Demo.png" />
+    <Resource Include="Screenshots\HW-1\VM Class.png" />
+    <Resource Include="Screenshots\HW-1\Item Class.png" />
+    <Resource Include="Screenshots\HW-1\Action.png" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,22 @@
+﻿@model ASP.Models.Home.HomeDemoViewModel;
+@{
+    ViewData["Title"] = "Demo";
+}
+<h1>@ViewData["Title"]</h1>
+
+
+<table class="table table-light table-striped table-bordered">
+    <thead class='table-dark'>
+        <tr>
+            <th>Name</th>
+            <th>Price ($)</th>
+            <th>Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model.Items)
+        {
+            <tr><td>@item.Name</td><td>@item.Price</td><td>@item.Number</td></tr>
+        }
+    </tbody>
+</table>
