@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="Screenshots\HW-1\Item Class.png" />
+    <None Remove="Screenshots\HW-2\Console.png" />
     <None Remove="Screenshots\HW-2\Cshtml.png" />
     <None Remove="Screenshots\HW-2\IActionResult.png" />
     <None Remove="Screenshots\HW-2\IdentityService.png" />
@@ -25,6 +26,7 @@
     <Resource Include="Screenshots\HW-1\Demo.png" />
     <Resource Include="Screenshots\HW-1\VM Class.png" />
     <Resource Include="Screenshots\HW-1\Action.png" />
+    <Resource Include="Screenshots\HW-2\Console.png" />
     <Resource Include="Screenshots\HW-2\Cshtml.png" />
     <Resource Include="Screenshots\HW-2\IActionResult.png" />
     <Resource Include="Screenshots\HW-2\IdentityService.png" />
