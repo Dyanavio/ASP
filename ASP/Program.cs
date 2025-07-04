@@ -1,3 +1,7 @@
+using ASP.Services.Identity;
+using ASP.Services.Random;
+using ASP.Services.Time;
+
 namespace ASP
 {
     public class Program
@@ -8,6 +12,13 @@ namespace ASP
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddSingleton<IRandomService, DefaultRandomService>();
+            builder.Services.AddSingleton<ITimeService, SecTimeService>();
+            builder.Services.AddSingleton<IIdentityService, IdentityService>();
+            //builder.Services.AddTransient<ITimeService, MillisecTimeService>(); // One time object. Will be different in controller and Razor
+            //builder.Services.AddScoped<ITimeService, MillisecTimeService>(); // - Constant inside of a signle request. Reloading the page created new objects, but they will not change
+            
 
             var app = builder.Build();
 

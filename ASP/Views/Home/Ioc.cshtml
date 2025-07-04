@@ -1,0 +1,31 @@
+﻿@inject ASP.Services.Time.ITimeService timeService;
+@{
+    ViewData["Title"] = "Ioc";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Inversion of Control</h1>
+</div>
+
+<b>Identity: @ViewData["identity"];</b>
+
+<p>
+    Inversion of Control (IoC) is an architectural pattern that selects a separate component (container/injector) which controls other objects' life cycles.
+    One can say it is the dependencies that are used (i.e. variables that are set by the container while the object is being constructed) instead of new Object.
+</p>
+<p>
+    Organization consists of several stages:
+</p>
+<ul>
+    <li>Describing shared classes (services)</li>
+    <li>Registration of classes in container and stating their type of life cycle</li>
+    <li>Declaring the dependencies in other classes (controller)</li>
+    <li>Launching Resolve to determine the order of implementation of dependencies(creating objects)</li>
+</ul>
+<p>
+    DIP (Dependency inversion principle) - is one of the SOLID principles that recommends to create dependencies from abstraction of highest level.
+    Services are described together with interface. Conclusion: a new minimal service is basically two elements: interface and a class.
+</p>
+<p>
+    DI - Dependency Injection - is a way to realise IoC by passing references to the service objects at the points of injection
+</p>

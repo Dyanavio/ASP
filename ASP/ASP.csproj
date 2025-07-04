@@ -8,6 +8,15 @@
 
   <ItemGroup>
     <None Remove="Screenshots\HW-1\Item Class.png" />
+    <None Remove="Screenshots\HW-2\Cshtml.png" />
+    <None Remove="Screenshots\HW-2\IActionResult.png" />
+    <None Remove="Screenshots\HW-2\IdentityService.png" />
+    <None Remove="Screenshots\HW-2\IIdentityService.png" />
+    <None Remove="Screenshots\HW-2\Program.png" />
+    <None Remove="Screenshots\HW-2\Result1.png" />
+    <None Remove="Screenshots\HW-2\Result2.png" />
+    <None Remove="Screenshots\HW-2\Result3.png" />
+    <None Remove="Screenshots\HW-2\Result4.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +25,15 @@
     <Resource Include="Screenshots\HW-1\Demo.png" />
     <Resource Include="Screenshots\HW-1\VM Class.png" />
     <Resource Include="Screenshots\HW-1\Action.png" />
+    <Resource Include="Screenshots\HW-2\Cshtml.png" />
+    <Resource Include="Screenshots\HW-2\IActionResult.png" />
+    <Resource Include="Screenshots\HW-2\IdentityService.png" />
+    <Resource Include="Screenshots\HW-2\IIdentityService.png" />
+    <Resource Include="Screenshots\HW-2\Program.png" />
+    <Resource Include="Screenshots\HW-2\Result1.png" />
+    <Resource Include="Screenshots\HW-2\Result2.png" />
+    <Resource Include="Screenshots\HW-2\Result3.png" />
+    <Resource Include="Screenshots\HW-2\Result4.png" />
   </ItemGroup>
 
 </Project>
