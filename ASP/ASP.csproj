@@ -21,6 +21,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Screenshots\HW-1\Item Class.png" />
     <Resource Include="Screenshots\HW-1\Table.png" />
     <Resource Include="Screenshots\HW-1\Demo.png" />
@@ -36,6 +45,12 @@
     <Resource Include="Screenshots\HW-2\Result2.png" />
     <Resource Include="Screenshots\HW-2\Result3.png" />
     <Resource Include="Screenshots\HW-2\Result4.png" />
+    <Resource Include="Screenshots\HW-4\Attempt1.png" />
+    <Resource Include="Screenshots\HW-4\Attempt2.png" />
+    <Resource Include="Screenshots\HW-4\Attempt3.png" />
+    <Resource Include="Screenshots\HW-4\Attempt4.png" />
+    <Resource Include="Screenshots\HW-4\Added to validation.png" />
+    <Resource Include="Screenshots\HW-4\AddedRegex.png" />
   </ItemGroup>
 
 </Project>
