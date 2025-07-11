@@ -111,6 +111,44 @@ namespace ASP.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "SelfRegistered",
+                            CanCreate = false,
+                            CanDelete = false,
+                            CanRead = false,
+                            CanUpdate = false,
+                            Description = "Self-registered user"
+                        },
+                        new
+                        {
+                            Id = "Employee",
+                            CanCreate = true,
+                            CanDelete = false,
+                            CanRead = true,
+                            CanUpdate = false,
+                            Description = "Company's employee"
+                        },
+                        new
+                        {
+                            Id = "Moderator",
+                            CanCreate = false,
+                            CanDelete = true,
+                            CanRead = true,
+                            CanUpdate = true,
+                            Description = "Content editor"
+                        },
+                        new
+                        {
+                            Id = "Administrator",
+                            CanCreate = true,
+                            CanDelete = true,
+                            CanRead = true,
+                            CanUpdate = true,
+                            Description = "System administrator"
+                        });
                 });
 
             modelBuilder.Entity("ASP.Data.Entities.UserAccess", b =>

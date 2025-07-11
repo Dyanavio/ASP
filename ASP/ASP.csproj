@@ -18,6 +18,14 @@
     <None Remove="Screenshots\HW-2\Result2.png" />
     <None Remove="Screenshots\HW-2\Result3.png" />
     <None Remove="Screenshots\HW-2\Result4.png" />
+    <None Remove="Screenshots\HW-5\ModalHideEvent.png" />
+    <None Remove="Screenshots\HW-5\Screen Recording 2025-07-11 123524.mp4" />
+    <None Remove="Screenshots\HW-5\Validation.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="Screenshots\HW-5\ModalHideEvent.png" />
+    <ApplicationDefinition Include="Screenshots\HW-5\Validation.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,6 +59,7 @@
     <Resource Include="Screenshots\HW-4\Attempt4.png" />
     <Resource Include="Screenshots\HW-4\Added to validation.png" />
     <Resource Include="Screenshots\HW-4\AddedRegex.png" />
+    <Resource Include="Screenshots\HW-5\Screen Recording 2025-07-11 123524.mp4" />
   </ItemGroup>
 
 </Project>

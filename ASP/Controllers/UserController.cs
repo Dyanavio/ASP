@@ -12,12 +12,14 @@ namespace ASP.Controllers
     public class UserController(
         IRandomService randomService, 
         IKdfService kdfService,
-        DataContext dataContext) : Controller
+        DataContext dataContext,
+        ILogger<UserController> logger) : Controller
     {
         private readonly IRandomService _randomService = randomService;
         private readonly IKdfService _kdfService = kdfService;
         private readonly DataContext _dataContext = dataContext;
         private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$"); // With God's help...
+        private readonly ILogger<UserController> _logger = logger;
         public ViewResult SignUp()
         {
             UserSignupPageModel pageModel = new();
@@ -60,6 +62,13 @@ namespace ASP.Controllers
                 {
                     errors[nameof(model.UserLogin)] = "Login cannot contain ':'";
                 }
+                else
+                {
+                    if(_dataContext.UserAccesses.Any(ua => ua.Login == model.UserLogin))
+                    {
+                        errors[nameof(model.UserLogin)] = "Login is already in use";
+                    }
+                }
             }
             if(string.IsNullOrEmpty(model.UserPassword))
             {
@@ -81,7 +90,6 @@ namespace ASP.Controllers
                     }
                 }
             }
-            Console.WriteLine(model.Agree);
             if (!(model.Agree))
             {
                 errors[nameof(model.Agree)] = "You must accept terms and conditions";
@@ -112,9 +120,20 @@ namespace ASP.Controllers
                     RoleId = "SelfRegistered"
                 };
                 // adding new object to context
+                _dataContext.Database.BeginTransaction();
                 _dataContext.Users.Add(user);
                 _dataContext.UserAccesses.Add(userAccess);
-                _dataContext.SaveChanges();
+                try
+                {
+                    _dataContext.SaveChanges();
+                    _dataContext.Database.CommitTransaction();
+                }
+                catch(Exception e)
+                {
+                    _logger.LogError("ProcessSignupData: {e}", e.Message);
+                    _dataContext.Database.RollbackTransaction();
+                    errors["500"] = "Could not save. Try again later";
+                }
             }
             return errors;
         }

@@ -15,6 +15,8 @@ namespace ASP.Data
             modelBuilder.Entity<UserAccess>().HasIndex(ua => ua.Login).IsUnique();
             modelBuilder.Entity<UserAccess>().HasOne(ua => ua.UserData).WithMany(ud => ud.UserAccesses).HasForeignKey(ua => ua.UserId);
             modelBuilder.Entity<UserAccess>().HasOne(ua => ua.UserRole).WithMany(ur => ur.UserAccesses).HasForeignKey(ua => ua.RoleId);
+
+            modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());
         }
     }
 }
