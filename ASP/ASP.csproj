@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\resources\diagram1.png" />
+    <Content Remove="wwwroot\resources\diagram2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Screenshots\HW-1\Item Class.png" />
     <None Remove="Screenshots\HW-2\Console.png" />
     <None Remove="Screenshots\HW-2\Cshtml.png" />
@@ -21,6 +26,11 @@
     <None Remove="Screenshots\HW-5\ModalHideEvent.png" />
     <None Remove="Screenshots\HW-5\Screen Recording 2025-07-11 123524.mp4" />
     <None Remove="Screenshots\HW-5\Validation.png" />
+    <None Remove="Screenshots\HW-6\Message1.png" />
+    <None Remove="Screenshots\HW-6\Message2.png" />
+    <None Remove="Screenshots\HW-6\Message3.png" />
+    <None Remove="Screenshots\HW-6\Message4.png" />
+    <None Remove="Screenshots\HW-6\TextOnHover.mp4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +70,13 @@
     <Resource Include="Screenshots\HW-4\Added to validation.png" />
     <Resource Include="Screenshots\HW-4\AddedRegex.png" />
     <Resource Include="Screenshots\HW-5\Screen Recording 2025-07-11 123524.mp4" />
+    <Resource Include="Screenshots\HW-6\Message1.png" />
+    <Resource Include="Screenshots\HW-6\Message2.png" />
+    <Resource Include="Screenshots\HW-6\Message3.png" />
+    <Resource Include="Screenshots\HW-6\Message4.png" />
+    <Resource Include="Screenshots\HW-6\TextOnHover.mp4" />
+    <Resource Include="wwwroot\resources\diagram1.png" />
+    <Resource Include="wwwroot\resources\diagram2.png" />
   </ItemGroup>
 
 </Project>

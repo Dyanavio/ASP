@@ -18,13 +18,18 @@ class Base64
 document.addEventListener('DOMContentLoaded', () =>
 {
     const modal = document.getElementById('authModal');
+    if (!modal) throw 'Element #authModal was not found';
     modal.addEventListener('hidden.bs.modal', event => {
         for (let input of modal.querySelectorAll('[name="user-login"], [name="user-password"]'))
         {
+            const alertDiv = document.getElementById('login-alert');
+            if (!alertDiv) throw 'Element #login-alert was not found';
+
             input.value = '';
             input.classList.remove('is-valid');
             input.classList.remove('is-invalid');
             input.nextElementSibling.innerHTML = '';
+            alertDiv.style.display = 'none';
         }
     });
 });
@@ -49,31 +54,53 @@ document.addEventListener('submit', e =>
         if (loginInput.value.length == 0) {
             loginInput.classList.add('is-invalid');
             loginInput.nextElementSibling.innerHTML = 'Login cannot be empty';
-            return;
+            //return;
         }
-        loginInput.classList.remove('is-invalid');
-        loginInput.classList.add('is-valid');
-        loginInput.nextElementSibling.innerHTML = '';
+        else {
+            loginInput.classList.remove('is-invalid');
+            loginInput.classList.add('is-valid');
+            loginInput.nextElementSibling.innerHTML = '';
+        }
+        
 
         if (passwordInput.value.length == 0) {
             passwordInput.classList.add('is-invalid');
             passwordInput.nextElementSibling.innerHTML = 'Password cannot be empty';
-            return;
+            //return;
         }
         else
         {
-            if (!(passwordRegex.test(passwordInput.value)))
-            {
-                console.log(passwordInput.value);
+            if (!(passwordRegex.test(passwordInput.value))) {
                 passwordInput.classList.add('is-invalid');
                 passwordInput.nextElementSibling.innerHTML = 'Password must be at least 12 characters long and contain lower, upper case letters, at least one number and at least one special character';
-                return;
+                //return;
+            }
+            else {
+                passwordInput.classList.remove('is-invalid');
+                passwordInput.classList.add('is-valid');
+                passwordInput.nextElementSibling.innerHTML = '';
             }
         }
-        passwordInput.classList.remove('is-invalid');
-        passwordInput.classList.add('is-valid');
-        passwordInput.nextElementSibling.innerHTML = '';
-
-        console.log(loginInput.value, passwordInput.value);
+        const credentials = new Base64().encode(`${loginInput.value}:${passwordInput.value}`);
+        fetch('/User/SignIn', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Basic ${credentials}`
+            }
+        }).then(r => r.json())
+            .then(j => {
+                if (j.status == 200)
+                {
+                    window.location.reload();
+                }
+                else
+                {
+                    const alertDiv = document.getElementById('login-alert');
+                    if (!alertDiv) throw 'Element #login-alert was not found';
+                    alertDiv.innerText = j.data;
+                    alertDiv.style.display = '';
+                }
+            });
+        //console.log(loginInput.value, passwordInput.value);
     }
 })

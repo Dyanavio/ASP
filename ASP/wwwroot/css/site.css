@@ -29,3 +29,19 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.login-icon {
+    width: 40px;
+    height: auto;
+    margin: 0 0 0 5px;
+    opacity: 1 !important;
+    border: 0px solid transparent;
+    border-radius: 50%;
+    font-weight: 700;
+    background: azure;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    cursor: default;
+}

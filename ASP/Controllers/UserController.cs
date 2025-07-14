@@ -6,6 +6,8 @@ using System.Text.Json;
 using ASP.Services.Random;
 using ASP.Services.Kdf;
 using System.Text.RegularExpressions;
+using System.Buffers.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace ASP.Controllers
 {
@@ -20,6 +22,62 @@ namespace ASP.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$"); // With God's help...
         private readonly ILogger<UserController> _logger = logger;
+
+        [HttpGet]
+        public JsonResult SignIn()
+        {
+            // Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+            string authHeader = Request.Headers.Authorization.ToString();
+            if(string.IsNullOrEmpty(authHeader))
+            {
+                return Json(new { Status = 401, Data = "Missing 'Authorization' header" });
+            }
+            string authScheme = "Basic ";
+            if(!authHeader.StartsWith(authScheme))
+            {
+                return Json(new { Status = 401, Data = $"Authorization scheme error: '{authScheme}' only" });
+            }
+            string credentials = authHeader[authScheme.Length..]; // QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+            string decoded;
+            try
+            {
+                decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(credentials));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("SignIn: {e}", e.Message);
+                return Json(new { Status = 401, Data = $"Authorization credentials decode error"});
+            }
+            string[] parts = decoded.Split(':', 2);
+            if(parts.Length != 2)
+            {
+                return Json(new { Status = 401, Data = $"Authorization credentials decompose error" });
+            }
+            string login    = parts[0];
+            string password = parts[1];
+            var userAccess = _dataContext
+                .UserAccesses
+                .AsNoTracking() // for readonly query, no connection to contex will be created
+                .Include(ua => ua.UserData)
+                .Include(ua => ua.UserRole)
+                .FirstOrDefault(ua => ua.Login == login);
+
+            if(userAccess == null)
+            {
+                return Json(new { Status = 401, Data = $"Authorization credentials rejected: invalid login" });
+            }
+            if(_kdfService.Dk(password, userAccess.Salt) != userAccess.Dk)
+            {
+                return Json(new { Status = 401, Data = $"Authorization credentials rejected: invalid password" });
+            }
+            HttpContext.Session.SetString("userAccess", JsonSerializer.Serialize(userAccess));
+            return Json(new {
+                Status = 200,
+                Data = "Ok"
+            });
+        }
+
+
         public ViewResult SignUp()
         {
             UserSignupPageModel pageModel = new();

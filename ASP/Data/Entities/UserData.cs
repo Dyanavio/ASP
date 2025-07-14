@@ -1,4 +1,6 @@
-﻿namespace ASP.Data.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace ASP.Data.Entities
 {
     public class UserData
     {
@@ -9,6 +11,7 @@
         public DateTime RegisteredAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        [JsonIgnore]
         public List<UserAccess> UserAccesses { get; set; } = [];
     }
 }

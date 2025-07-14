@@ -1,4 +1,5 @@
 using ASP.Data;
+using ASP.Middleware.Authentication;
 using ASP.Services.Identity;
 using ASP.Services.Kdf;
 using ASP.Services.Random;
@@ -29,7 +30,7 @@ namespace ASP
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.IdleTimeout = TimeSpan.FromSeconds(100);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
@@ -53,6 +54,11 @@ namespace ASP
             app.MapStaticAssets();
 
             app.UseSession();
+
+            app.UseAuthSession(); // Middleware incarnate
+
+
+
 
             app.MapControllerRoute(
                 name: "default",

@@ -1,4 +1,6 @@
-﻿namespace ASP.Data.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace ASP.Data.Entities
 {
     public class UserRole
     {
@@ -7,7 +9,9 @@
         public bool CanCreate { get; set; } 
         public bool CanRead { get; set; }   
         public bool CanUpdate { get; set; } 
-        public bool CanDelete { get; set; } 
+        public bool CanDelete { get; set; }
+
+        [JsonIgnore]
         public List<UserAccess> UserAccesses { get; set; } = [];
     }
 }
