@@ -8,34 +8,37 @@ using ASP.Services.Kdf;
 using System.Text.RegularExpressions;
 using System.Buffers.Text;
 using Microsoft.EntityFrameworkCore;
+using ASP.Services.Time;
 
 namespace ASP.Controllers
 {
     public class UserController(
+        ITimeService timeService,
         IRandomService randomService, 
         IKdfService kdfService,
         DataContext dataContext,
         ILogger<UserController> logger) : Controller
     {
+        private readonly ITimeService _timeService = timeService;
         private readonly IRandomService _randomService = randomService;
         private readonly IKdfService _kdfService = kdfService;
         private readonly DataContext _dataContext = dataContext;
         private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$"); // With God's help...
         private readonly ILogger<UserController> _logger = logger;
 
-        [HttpGet]
-        public JsonResult SignIn()
+        // ============= LOGIN ============= //
+
+        private UserAccess Authenticate()
         {
-            // Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
             string authHeader = Request.Headers.Authorization.ToString();
-            if(string.IsNullOrEmpty(authHeader))
+            if (string.IsNullOrEmpty(authHeader))
             {
-                return Json(new { Status = 401, Data = "Missing 'Authorization' header" });
+                throw new Exception("Missing 'Authorization' header");
             }
             string authScheme = "Basic ";
-            if(!authHeader.StartsWith(authScheme))
+            if (!authHeader.StartsWith(authScheme))
             {
-                return Json(new { Status = 401, Data = $"Authorization scheme error: '{authScheme}' only" });
+                throw new Exception($"Authorization scheme error: '{authScheme}' only");
             }
             string credentials = authHeader[authScheme.Length..]; // QWxhZGRpbjpvcGVuIHNlc2FtZQ==
             string decoded;
@@ -46,14 +49,14 @@ namespace ASP.Controllers
             catch (Exception e)
             {
                 _logger.LogError("SignIn: {e}", e.Message);
-                return Json(new { Status = 401, Data = $"Authorization credentials decode error"});
+                throw new Exception($"Authorization credentials decode error");
             }
             string[] parts = decoded.Split(':', 2);
-            if(parts.Length != 2)
+            if (parts.Length != 2)
             {
-                return Json(new { Status = 401, Data = $"Authorization credentials decompose error" });
+                throw new Exception($"Authorization credentials decompose error");
             }
-            string login    = parts[0];
+            string login = parts[0];
             string password = parts[1];
             var userAccess = _dataContext
                 .UserAccesses
@@ -62,13 +65,71 @@ namespace ASP.Controllers
                 .Include(ua => ua.UserRole)
                 .FirstOrDefault(ua => ua.Login == login);
 
-            if(userAccess == null)
+            if (userAccess == null)
             {
-                return Json(new { Status = 401, Data = $"Authorization credentials rejected: invalid login" });
+                throw new Exception($"Authorization credentials rejected: invalid login");
             }
-            if(_kdfService.Dk(password, userAccess.Salt) != userAccess.Dk)
+            if (_kdfService.Dk(password, userAccess.Salt) != userAccess.Dk)
             {
-                return Json(new { Status = 401, Data = $"Authorization credentials rejected: invalid password" });
+                throw new Exception($"Authorization credentials rejected: invalid password");
+            }
+            return userAccess;
+        }
+        [HttpGet]
+        public JsonResult LogIn()
+        {
+            UserAccess userAccess;
+            try
+            {
+                userAccess = Authenticate();
+            }
+            catch (Exception e)
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = e.Message
+                });
+            }
+            // The method has to create a token and send it
+            // Tokens are digital 'certificates' that contain information about users
+            // Tokens are divided into:
+            // JWT - that have information
+            // Bearer - that only have indentifiers of tokens
+
+            //Creating a new token
+            AccessToken accessToken = new()
+            {
+                Jti = Guid.NewGuid().ToString(),
+                Sub = userAccess.Id,
+                Iat = _timeService.Timestamp().ToString(),
+                Exp = (_timeService.Timestamp() + (long)1e4).ToString(),
+                Iss = nameof(ASP),
+                Aud = userAccess.RoleId
+            };
+
+            return Json(new
+            {
+                Status = 200,
+                Data = accessToken
+            });
+        }
+
+            [HttpGet]
+        public JsonResult SignIn()
+        {
+            UserAccess userAccess;
+            try
+            {
+                userAccess = Authenticate();
+            }
+            catch(Exception e)
+            {
+                return Json(new
+                { 
+                    Status = 401,
+                    Data = e.Message
+                });
             }
             HttpContext.Session.SetString("userAccess", JsonSerializer.Serialize(userAccess));
             return Json(new {
@@ -77,7 +138,7 @@ namespace ASP.Controllers
             });
         }
 
-
+        // ============= REGISTRATION ============= //
         public ViewResult SignUp()
         {
             UserSignupPageModel pageModel = new();

@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "SPA";
+}
+
+<div class="text-center">
+    <h1 class="display-4">SPA - Single Page Application</h1>
+</div>
+
+<p>SPA technology provides minimum number of page refreshes. Content is changes via JS or its frameworks. 
+    Actually, the page remains unchanged (Single) while its content is redrawn.
+</p>
+
+<div id="session-alert" class="alert alert-dark" role="alert" style="display: none"></div>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <button class="nav-link active" aria-current="page" data-nav="home">Home</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-nav="privacy">Privacy</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-nav="auth">Auth</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-nav="404">404</button>
+    </li>
+</ul>
+<div id="spa-container">
+
+</div>

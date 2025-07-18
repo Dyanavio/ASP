@@ -58,6 +58,10 @@ namespace ASP.Controllers
             };
             return View(model);
         }
+        public ViewResult Spa()
+        {
+            return View();
+        }
 
         public IActionResult Ioc() // Inversion of control
         {

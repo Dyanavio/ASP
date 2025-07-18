@@ -89,7 +89,7 @@ else
                         classAddon = Model?.FormErrors == null ? "" : (Model.FormErrors.ContainsKey("UserLogin") ? "is-invalid" : "is-valid");
                         errorMessage = null;
                         Model?.FormErrors?.TryGetValue("UserLogin", out errorMessage);
-                        value = (Model.FormErrors?.Count ?? 0) > 0 ? Model?.FormModel?.UserLogin : null;
+                        value = (Model?.FormErrors?.Count ?? 0) > 0 ? Model?.FormModel?.UserLogin : null;
                     }
                     <span class="input-group-text" id="user-login-addon"><i class="bi bi-key"></i></span>
                     <input name="user-login" type="text" class="form-control @classAddon" placeholder="Login"

@@ -1,4 +1,9 @@
 ﻿@using ASP.Data.Entities
+@using System.Security.Claims;
+@{
+    bool isAuthenticated = Context.User.Identity?.IsAuthenticated ?? false;
+    string name = isAuthenticated ? Context.User.Claims.First(c => c.Type == ClaimTypes.Name).Value : "";
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,35 +22,42 @@
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ASP</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                       aria-expanded="false" aria-label="Toggle navigation">
+                aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                         <li class="nav-item">
-                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                         </li>
-                         <li class="nav-item">
-                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                         </li>
-                         <li class="nav-item">
-                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Razor">Razor</a>
-                         </li>
-                         <li class="nav-item">
-                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Demo">Demo</a>
-                         </li>
-                         <li class="nav-item">
-                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Ioc">Inversion of Control</a>
-                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Razor">Razor</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Demo">Demo</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Ioc">Inversion of Control</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Spa">Single Page Application</a>
+                        </li>
                     </ul>
                     <div style="display: flex; flex-direction: row">
-                        <a class="btn btn-outline-secondary" asp-controller="User" asp-action="SignUp"><i class="bi bi-person-circle"></i></a>
-                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#authModal"><i class="bi bi-box-arrow-in-right"></i></button>
-                        @if(Context.Items["userAccess"] is UserAccess userAccess)
+                        @if (isAuthenticated)
                         {
-                            <div class="login-icon" id="login-icon" title="@userAccess.UserData.Name">
-                               @userAccess.UserData.Name[0]
+                            <a class="btn btn-outline-danger" href="?logout"><i class="bi bi-box-arrow-left"></i></a>
+                            <div class="login-icon" id="login-icon" title="@name">
+                                @name[0]
                             </div>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-secondary" asp-controller="User" asp-action="SignUp"><i class="bi bi-person-circle"></i></a>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#authModal"><i class="bi bi-box-arrow-in-right"></i></button>
                         }
                     </div>
                 </div>
@@ -97,9 +109,38 @@
         </div>
     </div>
 
+    <!-- Session Expired Modal -->
+    <div class="modal fade" id="session-expired-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="session-expired-modal-label">System</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Session Expired
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!------------------------------>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+@*
+    current https://site.com/Home/Privacy
+
+    <a href="IoC"> --> https://site.com/Home/IoC
+    <a href="/IoC"> --> https://site.com/IoC
+    <a href="//other.site"> --> https://other.site - сохранение протокола
+    <a href="?IoC=1"> --> https://site.com/Home/Privacy?IoC - отделяет query параметры
+    <a href="#IoC"> --> https://site.com/Home/Privacy#IoC - якорные ссылки
+*@

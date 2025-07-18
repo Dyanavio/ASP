@@ -34,14 +34,11 @@ document.addEventListener('DOMContentLoaded', () =>
     });
 });
 
-
-document.addEventListener('submit', e =>
-{
+document.addEventListener('submit', e => {
     const form = e.target;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$/;
     //@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$"
-    if (form.id == 'sign-in-form')
-    {
+    if (form.id == 'sign-in-form') {
         e.preventDefault();
         const loginInput = form.querySelector('[name="user-login"]');
         if (!loginInput) {
@@ -61,15 +58,14 @@ document.addEventListener('submit', e =>
             loginInput.classList.add('is-valid');
             loginInput.nextElementSibling.innerHTML = '';
         }
-        
+
 
         if (passwordInput.value.length == 0) {
             passwordInput.classList.add('is-invalid');
             passwordInput.nextElementSibling.innerHTML = 'Password cannot be empty';
             //return;
         }
-        else
-        {
+        else {
             if (!(passwordRegex.test(passwordInput.value))) {
                 passwordInput.classList.add('is-invalid');
                 passwordInput.nextElementSibling.innerHTML = 'Password must be at least 12 characters long and contain lower, upper case letters, at least one number and at least one special character';
@@ -89,12 +85,10 @@ document.addEventListener('submit', e =>
             }
         }).then(r => r.json())
             .then(j => {
-                if (j.status == 200)
-                {
+                if (j.status == 200) {
                     window.location.reload();
                 }
-                else
-                {
+                else {
                     const alertDiv = document.getElementById('login-alert');
                     if (!alertDiv) throw 'Element #login-alert was not found';
                     alertDiv.innerText = j.data;
@@ -103,4 +97,99 @@ document.addEventListener('submit', e =>
             });
         //console.log(loginInput.value, passwordInput.value);
     }
-})
+});
+
+document.addEventListener('DOMContentLoaded', () =>
+{
+    for (let btn of document.querySelectorAll('[data-nav]'))
+    {
+        btn.onclick = navigate;
+    }
+
+});
+
+function navigate(e)
+{
+    const targetBtn = e.target.closest('[data-nav]');
+    const route = targetBtn.getAttribute('data-nav');
+    if (!route) throw "Attribute [data-nav] was not found";
+    
+    for (let btn of document.querySelectorAll('[data-nav]'))
+    {
+        btn.classList.remove('active');
+    }
+    targetBtn.classList.add('active');
+
+    showPage(route);
+}
+
+const authHtml = `<div>
+    <div class="input-group mb-3">
+          <span class="input-group-text" id="user-login-addon"><i class="bi bi-key"></i></span>
+          <input name="user-login" type="text" class="form-control" placeholder="Login"
+                 aria-label="Userlogin" aria-describedby="user-login-addon" value="">
+          <div class="invalid-feedback"></div>
+      </div>
+      <div class="input-group mb-3">
+          <span class="input-group-text" id="user-password-addon"><i class="bi bi-lock"></i></span>
+          <input name="user-password" type="password" class="form-control" placeholder="Password"
+                 aria-label="Userpassword" aria-describedby="user-password-addon">
+          <div class="invalid-feedback"></div>
+    </div>
+    <button type="submit" class="btn btn-primary" onclick="authClick()">Log In</button>
+</div>`;
+const profileHtml = `<div>
+    <h3>Welcome</h3>
+    <button type="button" class="btn btn-danger" onclick="exitClick()">Exit</button>
+</div>`;
+
+function exitClick() {
+    window.accessToken = null;
+    showPage(window.activePage);
+}
+
+function authClick()
+{
+    const login = document.querySelector('input[name="user-login"]').value;
+    const password = document.querySelector('input[name="user-password"]').value;
+
+    const credentials = new Base64().encode(`${login}:${password}`);
+    fetch('/User/LogIn', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Basic ${credentials}`
+        }
+    }).then(r => r.json())
+        .then(j => {
+            if (j.status == 200)
+            {
+                window.accessToken = j.data;
+                console.log(window.accessToken);
+
+                setTimeout(() => {
+                    exitClick();
+                    const sessionModal = new bootstrap.Modal('#session-expired-modal');
+                    sessionModal.show();
+                }, (window.accessToken.exp - window.accessToken.iat));
+
+                showPage(window.activePage);
+            }
+            else
+            {
+                alert('Rejected');
+            }
+        });
+}
+
+function showPage(page)
+{
+    window.activePage = page;
+    const spaContainer = document.getElementById('spa-container');
+    if (!spaContainer) throw "Element #spa-container was not found";
+    switch (page) {
+        case 'home':    spaContainer.innerHTML = `<b>Home</b>`;     break;
+        case 'privacy': spaContainer.innerHTML = `<b>Privacy</b>`;  break;
+        case 'auth':    spaContainer.innerHTML = !!window.accessToken ? profileHtml : authHtml;          break;
+        default:        spaContainer.innerHTML = `<b>404</b>`;
+    }
+}
