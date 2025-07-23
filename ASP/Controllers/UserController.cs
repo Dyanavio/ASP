@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Buffers.Text;
 using Microsoft.EntityFrameworkCore;
 using ASP.Services.Time;
+using ASP.Services.Email;
 
 namespace ASP.Controllers
 {
@@ -17,7 +18,8 @@ namespace ASP.Controllers
         IRandomService randomService, 
         IKdfService kdfService,
         DataContext dataContext,
-        ILogger<UserController> logger) : Controller
+        ILogger<UserController> logger,
+        IEmailService emailService) : Controller
     {
         private readonly ITimeService _timeService = timeService;
         private readonly IRandomService _randomService = randomService;
@@ -25,6 +27,44 @@ namespace ASP.Controllers
         private readonly DataContext _dataContext = dataContext;
         private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$"); // With God's help...
         private readonly ILogger<UserController> _logger = logger;
+        private readonly IEmailService _emailService = emailService;
+
+        // ============= EMAIL ============= //
+        [HttpPost]
+        public JsonResult Email()
+        {
+            if(HttpContext.User.Identity?.IsAuthenticated ?? false)
+            {
+                try
+                {
+                    _emailService.Send("dimant2018@gmail.com", "ASP - Greeting", "Hello there");
+                }
+                catch(Exception e)
+                {
+                    return Json(new
+                    {
+                        Status = 500,
+                        Data = e.Message
+                    });
+                }
+                
+                return Json(new
+                {
+                    Status = 200,
+                    Data = "Ok"
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = "Unauthorized"
+                });
+            }
+                
+        }
+
 
         // ============= LOGIN ============= //
 
@@ -75,6 +115,7 @@ namespace ASP.Controllers
             }
             return userAccess;
         }
+
         [HttpGet]
         public JsonResult LogIn()
         {
@@ -97,16 +138,19 @@ namespace ASP.Controllers
             // JWT - that have information
             // Bearer - that only have indentifiers of tokens
 
-            //Creating a new token
+            //Creating a new Token
             AccessToken accessToken = new()
             {
                 Jti = Guid.NewGuid().ToString(),
                 Sub = userAccess.Id,
                 Iat = _timeService.Timestamp().ToString(),
-                Exp = (_timeService.Timestamp() + (long)1e4).ToString(),
+                Exp = (_timeService.Timestamp() + (long)1e1).ToString(),
                 Iss = nameof(ASP),
                 Aud = userAccess.RoleId
             };
+
+            _dataContext.AccessTokens.Add(accessToken);
+            _dataContext.SaveChanges();
 
             return Json(new
             {
@@ -115,7 +159,7 @@ namespace ASP.Controllers
             });
         }
 
-            [HttpGet]
+        [HttpGet]
         public JsonResult SignIn()
         {
             UserAccess userAccess;

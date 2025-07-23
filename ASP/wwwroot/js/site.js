@@ -140,12 +140,24 @@ const authHtml = `<div>
 </div>`;
 const profileHtml = `<div>
     <h3>Welcome</h3>
+    <button type="button" class="btn btn-dark" onclick="emailClick()">Send Email</button>
     <button type="button" class="btn btn-danger" onclick="exitClick()">Exit</button>
 </div>`;
 
-function exitClick() {
+function exitClick()
+{
     window.accessToken = null;
     showPage(window.activePage);
+}
+function emailClick()
+{
+    fetch("/User/Email", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + window.accessToken.jti
+        }
+    }).then(r => r.json())
+        .then(console.log);
 }
 
 function authClick()
@@ -170,7 +182,7 @@ function authClick()
                     exitClick();
                     const sessionModal = new bootstrap.Modal('#session-expired-modal');
                     sessionModal.show();
-                }, (window.accessToken.exp - window.accessToken.iat));
+                }, ((window.accessToken.exp - window.accessToken.iat) * 1000));
 
                 showPage(window.activePage);
             }
@@ -189,7 +201,7 @@ function showPage(page)
     switch (page) {
         case 'home':    spaContainer.innerHTML = `<b>Home</b>`;     break;
         case 'privacy': spaContainer.innerHTML = `<b>Privacy</b>`;  break;
-        case 'auth':    spaContainer.innerHTML = !!window.accessToken ? profileHtml : authHtml;          break;
+        case 'auth':    spaContainer.innerHTML = !!window.accessToken ? profileHtml : authHtml; break;
         default:        spaContainer.innerHTML = `<b>404</b>`;
     }
 }

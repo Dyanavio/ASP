@@ -1,5 +1,6 @@
 using ASP.Data;
 using ASP.Middleware.Authentication;
+using ASP.Services.Email;
 using ASP.Services.Identity;
 using ASP.Services.Kdf;
 using ASP.Services.Random;
@@ -15,6 +16,8 @@ namespace ASP
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Configuration.AddJsonFile("emailsettings.json");
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
@@ -22,6 +25,7 @@ namespace ASP
             builder.Services.AddSingleton<ITimeService, SecTimeService>();
             builder.Services.AddSingleton<IIdentityService, IdentityService>();
             builder.Services.AddSingleton<IKdfService, PbKdfService>();
+            builder.Services.AddSingleton<IEmailService, GmailService>();
             //builder.Services.AddTransient<ITimeService, MillisecTimeService>(); // One time object. Will be different in controller and Razor
             //builder.Services.AddScoped<ITimeService, MillisecTimeService>(); // - Constant inside of a signle request. Reloading the page created new objects, but they will not change
 
@@ -56,6 +60,7 @@ namespace ASP
             app.UseSession();
 
             app.UseAuthSession(); // Middleware incarnate
+            app.UseAuthToken();
 
             app.MapControllerRoute(
                 name: "default",

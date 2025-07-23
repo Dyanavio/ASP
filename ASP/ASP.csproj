@@ -31,6 +31,7 @@
     <None Remove="Screenshots\HW-6\Message3.png" />
     <None Remove="Screenshots\HW-6\Message4.png" />
     <None Remove="Screenshots\HW-6\TextOnHover.mp4" />
+    <None Remove="Screenshots\HW-8\Screen Recording 2025-07-23 202555.mp4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -75,6 +76,7 @@
     <Resource Include="Screenshots\HW-6\Message3.png" />
     <Resource Include="Screenshots\HW-6\Message4.png" />
     <Resource Include="Screenshots\HW-6\TextOnHover.mp4" />
+    <Resource Include="Screenshots\HW-8\Screen Recording 2025-07-23 202555.mp4" />
     <Resource Include="wwwroot\resources\diagram1.png" />
     <Resource Include="wwwroot\resources\diagram2.png" />
   </ItemGroup>
