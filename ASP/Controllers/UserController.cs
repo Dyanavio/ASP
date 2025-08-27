@@ -6,10 +6,13 @@ using System.Text.Json;
 using ASP.Services.Random;
 using ASP.Services.Kdf;
 using System.Text.RegularExpressions;
-using System.Buffers.Text;
 using Microsoft.EntityFrameworkCore;
 using ASP.Services.Time;
 using ASP.Services.Email;
+using ASP.Services.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication;
 
 namespace ASP.Controllers
 {
@@ -18,16 +21,22 @@ namespace ASP.Controllers
         IRandomService randomService, 
         IKdfService kdfService,
         DataContext dataContext,
+        DataAccessor dataAccessor,
         ILogger<UserController> logger,
-        IEmailService emailService) : Controller
+        IEmailService emailService,
+        IJwtService jwtService) : Controller
     {
         private readonly ITimeService _timeService = timeService;
         private readonly IRandomService _randomService = randomService;
         private readonly IKdfService _kdfService = kdfService;
         private readonly DataContext _dataContext = dataContext;
+        private readonly DataAccessor _dataAccessor = dataAccessor;
         private readonly Regex _passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?@$&*])[A-Za-z\d@$!%*?&]{12,}$"); // With God's help...
         private readonly ILogger<UserController> _logger = logger;
         private readonly IEmailService _emailService = emailService;
+        private readonly IJwtService _jwtService = jwtService;
+
+        const string AuthSessionKey = "userAccess";
 
         // ============= EMAIL ============= //
         [HttpPost]
@@ -67,7 +76,6 @@ namespace ASP.Controllers
 
 
         // ============= LOGIN ============= //
-
         private UserAccess Authenticate()
         {
             string authHeader = Request.Headers.Authorization.ToString();
@@ -98,12 +106,7 @@ namespace ASP.Controllers
             }
             string login = parts[0];
             string password = parts[1];
-            var userAccess = _dataContext
-                .UserAccesses
-                .AsNoTracking() // for readonly query, no connection to contex will be created
-                .Include(ua => ua.UserData)
-                .Include(ua => ua.UserRole)
-                .FirstOrDefault(ua => ua.Login == login);
+            var userAccess = _dataAccessor.GetUserAccessByLogin(login);
 
             if (userAccess == null)
             {
@@ -115,7 +118,6 @@ namespace ASP.Controllers
             }
             return userAccess;
         }
-
         [HttpGet]
         public JsonResult LogIn()
         {
@@ -152,13 +154,24 @@ namespace ASP.Controllers
             _dataContext.AccessTokens.Add(accessToken);
             _dataContext.SaveChanges();
 
+            var jwt = new
+            {
+                accessToken.Jti,
+                accessToken.Sub,
+                accessToken.Iat,
+                accessToken.Exp,
+                accessToken.Iss,
+                accessToken.Aud,
+                userAccess.UserData.Name,
+                userAccess.UserData.Email
+            };
+
             return Json(new
             {
                 Status = 200,
-                Data = accessToken
+                Data = _jwtService.EncodeJwt(jwt)
             });
         }
-
         [HttpGet]
         public JsonResult SignIn()
         {
@@ -175,12 +188,192 @@ namespace ASP.Controllers
                     Data = e.Message
                 });
             }
-            HttpContext.Session.SetString("userAccess", JsonSerializer.Serialize(userAccess));
+            HttpContext.Session.SetString(AuthSessionKey, JsonSerializer.Serialize(userAccess));
             return Json(new {
                 Status = 200,
                 Data = "Ok"
             });
         }
+
+
+        // ============= PROFILE ============= //
+        public ViewResult Profile(string id)
+        {
+            UserProfilePageModel model = new();
+            // Determining whose profile is queried
+            //var userAccess = _dataContext.UserAccesses.AsNoTracking().Include(ua => ua.UserData).Include(ua => ua.UserRole).FirstOrDefault(ua => ua.Login == id);
+            //var userAccess = (from ua in _dataContext.UserAccesses
+            //                  where ua.Login == id
+            //                  select ua).Include(ua => ua.UserData).Include(ua => ua.UserRole).AsNoTracking().FirstOrDefault();
+            var userAccess = _dataAccessor.GetUserAccessByLogin(id);
+
+            if (userAccess == null) // User was not found
+            {
+                model.IsPersonal = null;
+            }
+            else
+            {
+                model.Name = userAccess.UserData.Name;
+                model.RegisteredAt = userAccess.UserData.RegisteredAt;
+
+                bool isAuthenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+                if (isAuthenticated)
+                {
+                    model.Email = userAccess.UserData.Email;
+                    // Finding our own login
+                    string userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+
+                    if (userAccess.Login == userLogin) // Our own profile
+                    {
+                        model.IsPersonal = true;
+                        model.Birthdate = userAccess.UserData.Birthdate;
+                    }
+                    else // Someone's else profile
+                    {
+                        model.IsPersonal = false;
+                    }
+                }
+                else // Looking up someone's else profile unauthorized
+                {
+                    model.IsPersonal = false;
+                }
+            }
+            return View(model);
+        }
+        [HttpPatch]
+        public async Task<JsonResult> UpdateAsync()
+        {
+            bool isAuthenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!isAuthenticated)
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = "Unauthorized"
+                });
+            }
+            var userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+            var userAccess = _dataAccessor.GetUserAccessByLogin(userLogin, isEditable: true);
+
+            if(userAccess == null)
+            {
+                return Json(new
+                {
+                    Status = 403,
+                    Data = "Forbidden"
+                });
+            }
+
+            // Accesing the request's body directly and reading it as String
+            using StreamReader reader = new(Request.Body, Encoding.UTF8);
+            var requestBody = await reader.ReadToEndAsync();
+            if(requestBody == null)
+            {
+                return Json(new
+                {
+                    Status = 400, // Bad request
+                    Data = "Body must not be empty"
+                });
+            }
+            JsonElement json;
+            try
+            {
+                json = JsonSerializer.Deserialize<JsonElement>(requestBody);
+            }
+            catch(Exception e)
+            {
+                _logger.LogInformation("JSON decode error {e}", e.Message);
+                return Json(new
+                {
+                    Status = 400,
+                    Data = "Body must be a valid JSON string"
+                });
+            }
+            if(json.ValueKind != JsonValueKind.Array)
+            {
+                return Json(new
+                {
+                    Status = 422, // Unprocessable entity
+                    Data = "Body must be a JSON array"
+                });
+            }
+            foreach(var element in json.EnumerateArray())
+            {
+                string value = element.GetProperty("value").GetString()!;
+                string field = element.GetProperty("field").GetString()!;
+                switch (field)
+                {
+                    case "Name": userAccess.UserData.Name = value; break;
+                    case "Email": userAccess.UserData.Email = value; break;
+                    default:
+                        return Json(new
+                        {
+                            Status = 409, // Request conflict
+                            Data = $"Conflict: undefined field '{field}'"
+                        });
+                }
+            }
+            await _dataContext.SaveChangesAsync();
+            return Json(new
+            {
+                Status = 202, // Accepted
+                Data = "Accepted"
+            });
+        }
+
+        [HttpDelete]
+        public async Task<JsonResult> DeleteAsync()
+        {
+            string authControl = HttpContext.Request.Headers["Authentication-Control"].ToString();
+            if(string.IsNullOrEmpty(authControl))
+            {
+                return Json(new
+                {
+                    Status = 400,
+                    Data = "Missing Header: 'Authentication-Control'"
+                });
+            }
+            authControl = Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(authControl));
+            bool isAuthenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if(!isAuthenticated)
+            {
+                return Json(new
+                {
+                    Status = 401,
+                    Data = "Unauthorized"
+                });
+            }
+            string userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
+            if(userLogin != authControl)
+            {
+                return Json(new
+                {
+                    Status = 403,
+                    Data = "Forbidden"
+                });
+            }
+            bool isDeleted = await _dataAccessor.DeleteUserAsync(authControl);
+            if(isDeleted)
+            {
+                HttpContext.Session.Remove(AuthSessionKey);
+                return Json(new
+                {
+                    Status = 200,
+                    Data = "Deleted"
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    Status = 409, // Request conflict
+                    Data = "Request conflict. Not Deleted"
+                });
+            }
+        }
+
+
+
 
         // ============= REGISTRATION ============= //
         public ViewResult SignUp()
@@ -194,7 +387,6 @@ namespace ASP.Controllers
             }
             return View(pageModel);
         }
-
         [HttpPost]
         public async Task<RedirectToActionResult> Register(UserSignupFormModel model)
         {
@@ -202,7 +394,6 @@ namespace ASP.Controllers
                 JsonSerializer.Serialize(model)); // Saving
             return RedirectToAction(nameof(SignUp)); 
         }
-
         private Dictionary<string, string> ProcessSignUpData(UserSignupFormModel model)
         {
             Dictionary<string, string> errors = [];
@@ -272,7 +463,7 @@ namespace ASP.Controllers
                     Birthdate = model.Birthdate,
                     RegisteredAt = DateTime.Now,
                 };
-                String salt = _randomService.Otp(12); // TODO: add salt generator
+                string salt = _randomService.Otp(12); // TODO: add salt generator
                 UserAccess userAccess = new()
                 {
                     Id = Guid.NewGuid(),

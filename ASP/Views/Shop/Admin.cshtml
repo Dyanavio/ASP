@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Shop";
+    bool isAuthenticated = Context.User.Identity?.IsAuthenticated ?? false;
+}
+<div class="text-center">
+    <h1 class="display-4">Manager's Workplace</h1>
+</div>
+
+@if (isAuthenticated)
+{
+    <form id="group-add-form" action="/api/product-group" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="group-name-addon">Item group's name:</span>
+                <input name="group-name" type="text" class="form-control" aria-describedby="group-name-addon group-name-subtitle">
+            </div>
+            <div class="form-text" id="group-name-subtitle">Enter item group's name to display on the website</div>
+        </div>
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="group-description-addon">Description:</span>
+                <input name="group-description" type="text" class="form-control" aria-describedby="group-description-addon group-description-subtitle">
+            </div>
+            <div class="form-text" id="group-description-subtitle">Enter detailed description</div>
+        </div>
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="group-slug-addon">Slug:</span>
+                <input name="group-slug" type="text" class="form-control" aria-describedby="group-slug-addon group-slug-subtitle">
+            </div>
+            <div class="form-text" id="group-slug-subtitle">Enter slug</div>
+        </div>
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="group-parent-id-addon">Parent group ID:</span>
+                <input name="group-parent-id" type="text" class="form-control" aria-describedby="group-parent-id-addon group-parent-id-subtitle">
+            </div>
+            <div class="form-text" id="group-parent-id-subtitle">Enter parent group slug</div>
+        </div>
+
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="group-img">Group's image</label>
+            <input name="group-image" type="file" class="form-control" id="group-img" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Add group</button>
+
+        <div id="group-form-success-alert" class="alert alert-success d-none m-3">Group created successfully</div>
+        <div id="group-form-fail-alert" class="alert alert-danger d-none m-3"></div>
+    </form>
+
+
+	<form id="product-add-form" action="/api/product" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="basic-url" class="form-label">Item's name</label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon3">Item's name:</span>
+                <input name="product-name" type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4">
+            </div>
+            <div class="form-text" id="basic-addon4">Enter item's name</div>
+        </div>
+
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="inputGroupFile01">Item's image</label>
+            <input name="product-image" type="file" class="form-control" id="inputGroupFile01" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Add</button>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger" role="alert">Manager's account is required to work with data</div>
+
+}

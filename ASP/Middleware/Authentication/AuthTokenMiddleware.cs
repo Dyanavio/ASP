@@ -12,13 +12,11 @@ namespace ASP.Middleware.Authentication
     public class AuthTokenMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ITimeService _timeService;
-        public AuthTokenMiddleware(RequestDelegate next, ITimeService timeService)
+        public AuthTokenMiddleware(RequestDelegate next )
         {
             _next = next;
-            _timeService = timeService;
         }
-        public async Task InvokeAsync(HttpContext context, DataContext dataContext)
+        public async Task InvokeAsync(HttpContext context, DataContext dataContext, ITimeService timeService)
         {
             if (context
                 .Request
@@ -34,15 +32,17 @@ namespace ASP.Middleware.Authentication
                               .ThenInclude(ua => ua.UserData).OrderByDescending(at => at.Iat)
                               .FirstOrDefault(at => at.Jti == jti) is AccessToken accessToken)
                 {
-                    if ((long)Convert.ToDouble(accessToken.Exp) < ((DateTime.Now.Ticks - DateTime.UnixEpoch.Ticks) / (long)1e7))
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine($"Session expired. Forced logout.");
-                        Console.ResetColor();
-                    }
-                    else
-                    {
-                        context.User = new ClaimsPrincipal(
+                    //if ((long)Convert.ToDouble(accessToken.Exp) < ((DateTime.Now.Ticks - DateTime.UnixEpoch.Ticks) / (long)1e7))
+                    //{
+                    //    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    //    Console.WriteLine($"Session expired. Forced logout.");
+                    //    Console.ResetColor();
+                    //}
+                    //else
+                    //{
+                    //    
+                    //}
+                    context.User = new ClaimsPrincipal(
                              new ClaimsIdentity(
                                  new Claim[]
                                  {
@@ -52,10 +52,8 @@ namespace ASP.Middleware.Authentication
                                  nameof(AuthTokenMiddleware)
                              )
                         );
-                    }
-                        
                 }
-                
+
             }
             await _next(context);
         }

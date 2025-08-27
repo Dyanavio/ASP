@@ -106,7 +106,88 @@ document.addEventListener('DOMContentLoaded', () =>
         btn.onclick = navigate;
     }
 
+    const editProfileButton = document.getElementById('edit-profile-button');
+    if (editProfileButton)
+    {
+        editProfileButton.addEventListener('click', editProfileButtonClick)
+    }
+
+    const deleteProfileButton = document.getElementById('delete-profile-button');
+    if (deleteProfileButton)
+    {
+        deleteProfileButton.addEventListener('click', deleteProfileButtonClick)
+    }
 });
+
+function deleteProfileButtonClick()
+{
+    if (confirm(`Confirm account deletion`))
+    {
+        let login = prompt("Enter login to confirm: ");
+        if (!login || !(login.trim()))
+        {
+            alert("Deletion cancelled");
+            return;
+        }
+        fetch("/User/Delete",
+            {
+                method: 'DELETE',
+                headers: {
+                    'Authentication-Control': new Base64().encodeUrl(login)
+                }
+            }).then(r => r.json()).then(j =>
+            {
+                console.log(j);
+                if (j.status == 200) {
+                    alert("Your profiles was deleted");
+                    window.location = '/';
+                }
+                else
+                {
+                    alert("Deletion cancelled: login might be incorrect");
+                }
+            });
+    }
+}
+
+function editProfileButtonClick()
+{
+    let changes = [];
+    for (let element of document.querySelectorAll('[data-editable]'))
+    {
+        if (element.getAttribute('contenteditable'))
+        {
+            element.removeAttribute('contenteditable');
+            //console.log(element.originalData, element.innerText);
+            if (element.originalData != element.innerText)
+            {
+                changes.push({
+                    field: element.getAttribute('data-editable'),
+                    value: element.innerText
+                });
+            }
+        }
+        else
+        {
+            element.setAttribute('contenteditable', true);
+            element.originalData = element.innerText;
+        }
+    }
+    if (changes.length > 0)
+    {
+        const message = changes.map(c => `${c.field}=${c.value}`).join(', ');
+        if (confirm(`Confirm changes ${message}`))
+        {
+            fetch("/User/Update", {
+                method: 'PATCH',
+                header: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(changes)
+            }).then(r => r.json()).then(console.log);
+        }
+    }
+}
 
 function navigate(e)
 {
@@ -154,7 +235,7 @@ function emailClick()
     fetch("/User/Email", {
         method: "POST",
         headers: {
-            "Authorization": "Bearer " + window.accessToken.jti
+            "Authorization": "Bearer " + window.accessToken // window.accessToken.jti
         }
     }).then(r => r.json())
         .then(console.log);
@@ -178,11 +259,11 @@ function authClick()
                 window.accessToken = j.data;
                 console.log(window.accessToken);
 
-                setTimeout(() => {
-                    exitClick();
-                    const sessionModal = new bootstrap.Modal('#session-expired-modal');
-                    sessionModal.show();
-                }, ((window.accessToken.exp - window.accessToken.iat) * 1000));
+                //setTimeout(() => {
+                //    exitClick();
+                //    const sessionModal = new bootstrap.Modal('#session-expired-modal');
+                //    sessionModal.show();
+                //}, ((window.accessToken.exp - window.accessToken.iat) * 1000));
 
                 showPage(window.activePage);
             }

@@ -9,6 +9,9 @@ namespace ASP.Data
         public DbSet<UserAccess> UserAccesses { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<AccessToken> AccessTokens { get; set; }
+        public DbSet<ProductGroup> ProductGroups { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ItemImage> ItemImages { get; set; }
 
         public DataContext(DbContextOptions options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -20,8 +23,12 @@ namespace ASP.Data
             modelBuilder.Entity<AccessToken>().HasKey(at => at.Jti);
             modelBuilder.Entity<AccessToken>().HasOne(at => at.UserAccess).WithMany().HasForeignKey(at => at.Sub);
 
-
+            // ======= CONFIGURATIONS =======
             modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.ProductConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.GroupConfiguration());
+
+            modelBuilder.Entity<ItemImage>().HasKey(image => new { image.ItemId, image.ImageUrl });
         }
     }
 }

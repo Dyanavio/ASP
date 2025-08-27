@@ -3,6 +3,7 @@
 @{
     bool isAuthenticated = Context.User.Identity?.IsAuthenticated ?? false;
     string name = isAuthenticated ? Context.User.Claims.First(c => c.Type == ClaimTypes.Name).Value : "";
+    string userLogin = isAuthenticated ? Context.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value : "";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -45,14 +46,18 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Spa">Single Page Application</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Shop" asp-action="Index">Store</a>
+                        </li>
                     </ul>
                     <div style="display: flex; flex-direction: row">
                         @if (isAuthenticated)
                         {
-                            <a class="btn btn-outline-danger" href="?logout"><i class="bi bi-box-arrow-left"></i></a>
-                            <div class="login-icon" id="login-icon" title="@name">
+                            <a class="btn btn-outline-danger" href="?logout"><i class="bi bi-box-arrow-left"></i> </a> 
+                            <a class="nav-link text-dark login-icon mx-2" title="@name" id="login-icon" asp-area="" asp-controller="User" asp-action="Profile" asp-route-id="@userLogin">
                                 @name[0]
-                            </div>
+                            </a>
+                            
                         }
                         else
                         {
@@ -131,6 +136,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/shop.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

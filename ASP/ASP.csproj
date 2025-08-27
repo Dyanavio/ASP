@@ -77,6 +77,12 @@
     <Resource Include="Screenshots\HW-6\Message4.png" />
     <Resource Include="Screenshots\HW-6\TextOnHover.mp4" />
     <Resource Include="Screenshots\HW-8\Screen Recording 2025-07-23 202555.mp4" />
+    <Resource Include="Screenshots\HW-9\NameValidation.png" />
+    <Resource Include="Screenshots\HW-9\DescriptionValidation.png" />
+    <Resource Include="Screenshots\HW-9\SlugEmptinessValidation.png" />
+    <Resource Include="Screenshots\HW-9\SlugExistanceValidation.png" />
+    <Resource Include="Screenshots\HW-9\ParentIdValidation.png" />
+    <Resource Include="Screenshots\HW-9\Success.png" />
     <Resource Include="wwwroot\resources\diagram1.png" />
     <Resource Include="wwwroot\resources\diagram2.png" />
   </ItemGroup>

@@ -1,9 +1,12 @@
 using ASP.Data;
+using ASP.Data.Entities;
 using ASP.Middleware.Authentication;
 using ASP.Services.Email;
 using ASP.Services.Identity;
+using ASP.Services.Jwt;
 using ASP.Services.Kdf;
 using ASP.Services.Random;
+using ASP.Services.Storage;
 using ASP.Services.Time;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -26,10 +29,13 @@ namespace ASP
             builder.Services.AddSingleton<IIdentityService, IdentityService>();
             builder.Services.AddSingleton<IKdfService, PbKdfService>();
             builder.Services.AddSingleton<IEmailService, GmailService>();
+            builder.Services.AddSingleton<IJwtService, JwtServiceV1>();
+            builder.Services.AddSingleton<IStorageService, DiskStorageService>();
             //builder.Services.AddTransient<ITimeService, MillisecTimeService>(); // One time object. Will be different in controller and Razor
             //builder.Services.AddScoped<ITimeService, MillisecTimeService>(); // - Constant inside of a signle request. Reloading the page created new objects, but they will not change
 
             builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDb")));
+            builder.Services.AddScoped<DataAccessor>();
 
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
@@ -59,8 +65,13 @@ namespace ASP
 
             app.UseSession();
 
+            // ============== MIDDLEWARE ==============
+
             app.UseAuthSession(); // Middleware incarnate
-            app.UseAuthToken();
+            //app.UseAuthToken();
+            app.UseAuthJwt();
+
+            // ========================================
 
             app.MapControllerRoute(
                 name: "default",

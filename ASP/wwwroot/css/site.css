@@ -38,10 +38,24 @@ body {
     border: 0px solid transparent;
     border-radius: 50%;
     font-weight: 700;
-    background: azure;
+    background: #593b8a;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 0 auto;
     cursor: default;
+}
+
+[contenteditable]
+{
+    border: 1px solid lightgray;
+    border-radius: 5px;
+}
+
+#product-add-form , #group-add-form
+{
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
 }

@@ -24,7 +24,7 @@ namespace ASP.Middleware.Authentication
                 var ua = JsonSerializer.Deserialize<UserAccess>(context.Session.GetString("userAccess")!)!;
                 // context.Items["userAccess"] = ua - Do not do this;
                 // Sending data as entities to HttpContext creates high cohesion that can lead
-                // to problems after creating a migration (i.e. changin entities) or switching data provider
+                // to problems after creating a migration (i.e. changing entities) or switching data provider
 
                 // Solution - use another model (of the HttpContext level)
                 // context.User
@@ -35,6 +35,7 @@ namespace ASP.Middleware.Authentication
                             // We do so as there can be multiple sources of data
                             new(ClaimTypes.Name, ua.UserData.Name), // Mapping: changing model (creating a dictionary) from ua.UserAccess to the set of Claim(s)
                             new(ClaimTypes.Email, ua.UserData.Email),
+                            new(ClaimTypes.Sid, ua.Login) // Sid - secure id = login
                         },
                         nameof(AuthSessionMiddleware) // Here we indicate the provider of data
                     )
