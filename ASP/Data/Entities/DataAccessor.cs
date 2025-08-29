@@ -1,4 +1,5 @@
 ﻿using ASP.Models.Api.Group;
+using ASP.Models.Api.Product;
 using Microsoft.EntityFrameworkCore;
 
 namespace ASP.Data.Entities
@@ -16,6 +17,16 @@ namespace ASP.Data.Entities
         {
             return _dataContext.ProductGroups.Any(g => g.Name == name);
         }
+
+        public bool IsProductSlugUsed(string slug)
+        {
+            return _dataContext.Products.Any(p => p.Slug == slug);
+        }
+        public bool IsProductNameUsed(string name)
+        {
+            return _dataContext.Products.Any(p => p.Name == name);
+        }
+
         public void AddProductGroup(ApiGroupDataModel model)
         {
             _dataContext.ProductGroups.Add(new ProductGroup()
@@ -35,6 +46,35 @@ namespace ASP.Data.Entities
             catch (Exception e)
             {
                 _logger.LogError($"AddProductGroup: {e.Message}");
+                throw;
+            }
+        }
+        public void AddProduct(ApiProductDataModel model)
+        {
+            Guid groupId;
+            try { groupId = Guid.Parse(model.GroupId); }
+            catch { throw; }
+
+            _dataContext.Products.Add(new Product()
+            {
+                Id = Guid.NewGuid(),
+                GroupId = groupId,
+                Name = model.Name,
+                Description = model.Description,
+                Slug = model.Slug,
+                ImageUrl = model.ImageUrl,
+                Price = model.Price,
+                Stock = model.Stock,
+                DeletedAt = null,
+                
+            });
+            try
+            {
+                _dataContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"AddProduct: {e.Message}");
                 throw;
             }
         }

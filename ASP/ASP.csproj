@@ -49,6 +49,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Screenshots\HW-10\NameValidation.png" />
+    <Resource Include="Screenshots\HW-10\PriceValidation.png" />
+    <Resource Include="Screenshots\HW-10\StockValidation.png" />
+    <Resource Include="Screenshots\HW-10\ProductSuccess.png" />
+    <Resource Include="Screenshots\HW-10\Database.png" />
     <Resource Include="Screenshots\HW-1\Item Class.png" />
     <Resource Include="Screenshots\HW-1\Table.png" />
     <Resource Include="Screenshots\HW-1\Demo.png" />

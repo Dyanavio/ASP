@@ -13,7 +13,7 @@ namespace ASP.Models.Api.Group
         [FromForm(Name = "group-slug")]
         public string? Slug { get; set; } = null!;
 
-        [FromForm(Name = "group-parent-id")]
+        [FromForm(Name = "group-parent")]
         public string? ParentId { get; set; }
 
         [FromForm(Name = "group-image")]

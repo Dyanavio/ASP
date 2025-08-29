@@ -15,7 +15,27 @@ function handleAddProduct(form)
     fetch(form.action, {
         method: 'POST',
         body: new FormData(form)
-    }).then(r => r.json()).then(console.log).catch(console.error);
+    }).then(r => r.json()).then(j =>
+    {
+        var success = document.getElementById('product-form-success-alert');
+        if (!success) throw "Element 'product-form-success-alert' was not found";
+
+        var fail = document.getElementById('product-form-fail-alert');
+        if (!fail) throw "Element 'product-form-success-alert' was not found";
+
+        console.log(j);
+        if (j.status == 201) {
+            form.reset();
+            fail.classList.add('d-none');
+            fail.innerText = '';
+            success.classList.remove('d-none');
+        }
+        else {
+            success.classList.add('d-none');
+            fail.classList.remove('d-none');
+            fail.innerText = j.name;
+        }
+    });
 }
 
 function handleAddGroup(form)

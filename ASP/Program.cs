@@ -46,8 +46,12 @@ namespace ASP
             });
 
             var app = builder.Build();
+            app.UseRequestLocalization(opt =>
+            {
+                opt.DefaultRequestCulture = new
+                Microsoft.AspNetCore.Localization.RequestCulture("en-US");
+            });
 
-           
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -67,7 +71,7 @@ namespace ASP
 
             // ============== MIDDLEWARE ==============
 
-            app.UseAuthSession(); // Middleware incarnate
+            app.UseAuthSession();
             //app.UseAuthToken();
             app.UseAuthJwt();
 

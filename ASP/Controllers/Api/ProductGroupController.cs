@@ -4,7 +4,7 @@ using ASP.Services.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ASP.Controllers
+namespace ASP.Controllers.Api
 {
     [Route("api/product-group")]
     [ApiController]
@@ -16,7 +16,7 @@ namespace ASP.Controllers
         private object AnyRequest()
         {
             string methodName = "Execute" + HttpContext.Request.Method;
-            var type = this.GetType();
+            var type = GetType();
             var action = type.GetMethod(methodName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (action == null)
             {
@@ -75,7 +75,7 @@ namespace ASP.Controllers
                 return new { status = 400, name = "Slug is already used" };
             }
 
-            if (formModel.ParentId != null && !(Guid.TryParse(formModel.ParentId, out Guid guid)))
+            if (formModel.ParentId != null && !Guid.TryParse(formModel.ParentId, out Guid guid))
             {
                 return new { status = 400, name = "Invalid parent group id" };
             }
