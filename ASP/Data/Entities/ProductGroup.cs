@@ -12,7 +12,7 @@
 
         // Navigation properties - are properties of Entity type
         public ProductGroup? ParentGroup { get; set; }
-        public IEnumerable<Product> Products { get; set; } = [];
+        public ICollection<Product> Products { get; set; } = [];
 
     }
 }

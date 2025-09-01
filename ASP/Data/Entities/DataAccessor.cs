@@ -84,6 +84,16 @@ namespace ASP.Data.Entities
             // AsEnumerable changes IQueryable to IEnumerable and executes the query
             return _dataContext.ProductGroups.AsNoTracking().Where(group => group.DeletedAt == null).AsEnumerable();
         }
+        public ProductGroup? GetProductGroupBySlug(string slug)
+        {
+            return _dataContext.ProductGroups.Include(group => group.Products).AsNoTracking().FirstOrDefault(group => group.Slug == slug && group.DeletedAt == null);
+        }
+        public Product? GetProductBySlug(string slug)
+        {
+            return _dataContext.Products
+                    .AsNoTracking()
+                    .FirstOrDefault(p => (p.Slug == slug || p.Id.ToString() == slug) && p.DeletedAt == null);
+        }
 
         public UserAccess? GetUserAccessByLogin(string userLogin, bool isEditable = false)
         {
@@ -116,8 +126,9 @@ namespace ASP.Data.Entities
                 _logger.LogWarning("DeleteUserAsync: {e}", e.Message);
                 return false;
             }
-
         }
+
+
         
     }
 }

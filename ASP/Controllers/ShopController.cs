@@ -9,8 +9,36 @@ namespace ASP.Controllers
         private readonly DataAccessor _dataAccessor = dataAccessor;
         public IActionResult Index()
         {
-            return View();
+            ShopIndexPageModel model = new()
+            {
+                ProductGroups = _dataAccessor.GetProductGroups()
+            };
+
+            return View(model);
         }
+
+        public IActionResult Group([FromRoute]string id)
+        {
+            ShopGroupPageModel model = new()
+            {
+                ProductGroup = _dataAccessor.GetProductGroupBySlug(id),
+                ProductGroups = _dataAccessor.GetProductGroups()
+            };
+
+            return View(model);
+        }
+
+        public IActionResult Item([FromRoute] string id)
+        {
+            ShopItemPageModel model = new()
+            {
+                Product = _dataAccessor.GetProductBySlug(id),
+                ProductGroups = _dataAccessor.GetProductGroups()
+            };
+            return View(model);
+        }
+
+
         public IActionResult Admin()
         {
             ShopAdminPageModel model = new()
