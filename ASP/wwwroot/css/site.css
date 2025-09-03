@@ -71,8 +71,60 @@ body {
 
 .carousel-control-prev, .carousel-control-next
 {
-    color: white;
+    color: gray;
     text-decoration: none;
     font-size: 50px;
 }
 
+.item-page-image
+{
+    width: 90%;
+    margin: 5%;
+}
+
+[data-in-cart="0"] .in-cart {
+    display: none;
+}
+
+[data-in-cart="0"] .not-in-cart {
+    display: block;
+}
+
+[data-in-cart="1"] .in-cart
+{
+    display: block;
+}
+[data-in-cart="1"] .not-in-cart {
+    display: none;
+}
+
+.error-modal-header 
+{
+    background: #e85e6c;
+    border-bottom: none;
+    position: relative;
+    text-align: center;
+    margin: -20px -20px 0;
+    border-radius: 5px 5px 0 0;
+    padding: 35px;
+}
+
+.modal-content {
+    padding: 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+}
+
+.icon-box {
+    color: #fff;
+    width: 95px;
+    height: 95px;
+    display: inline-block;
+    border-radius: 50%;
+    z-index: 9;
+    border: 5px solid #fff;
+    padding: 10px;
+    text-align: center;
+    font-size: 42px;
+}

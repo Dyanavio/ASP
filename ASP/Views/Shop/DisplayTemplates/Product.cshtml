@@ -5,13 +5,16 @@
 		<img src="/Storage/Item/@(Model.ImageUrl)" class="card-img-top" alt="@Model.Name"/>
 		<div class="card-body">
 			<a asp-action="Item" asp-route-id="@(Model.Slug ?? Model.Id.ToString())" class="nav-link">
-			<h5 class="card-title">@Model.Name</h5>
-			<p class="card-text">@Model.Description</p>
+				<h5 class="card-title">@Model.Name</h5>
+				<p class="card-text">@Model.Description</p>
 			</a>
 		</div>
-		<div class="card-footer bg-transparent d-flex justify-content-between">
+		<div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
 			<span>£ @Model.Price.ToString("F2");</span>
-			<span>Available: @(Model.Stock)</span>
+			<div data-in-cart="@(Model.Stock > 20 ? 1 : 0)">
+				<a class="in-cart btn btn-success" asp-action="Cart"><i class="bi bi-cart-check"></i></a>
+				<button data-product-id="@Model.Id" class="not-in-cart btn btn-outline-success"><i class="bi bi-cart"></i></button>
+			</div>
 		</div>
 	</div>
 </div>

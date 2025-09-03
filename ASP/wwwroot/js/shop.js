@@ -10,6 +10,19 @@
     }
 });
 
+document.addEventListener('DOMContentLoaded', e => {
+    for (let button of document.querySelectorAll("[data-product-id]")) {
+        button.addEventListener('click', addToCartClick);
+    }
+    const reloadButton = document.getElementById('error-modal-reload-button');
+    if (!reloadButton) throw "Element 'error-modal-reload-button' was not found";
+    reloadButton.onclick = reloadModalClick;
+});
+
+function reloadModalClick() {
+    window.location.reload();
+}
+
 function handleAddProduct(form)
 {
     fetch(form.action, {
@@ -67,3 +80,37 @@ function handleAddGroup(form)
     });
 }
 
+
+function addToCartClick(e)
+{
+    const button = e.target.closest("[data-product-id]");
+    if (!button) throw `Closest element "[data-product-id]" was not found`;
+    const productId = button.getAttribute("data-product-id");
+
+    fetch("/api/cart/" + productId, {
+        method: 'POST'
+    }).then(r => r.json()).then(j =>
+    {
+        console.log(j);
+
+        if (j.message == "Ok") {
+            // ...
+        }
+        else
+        {
+            if (j.message == 'Unauthorized') {
+                if (confirm("Log in to use cart. Do you want to proceed?")) {
+                    const sessionModal = new bootstrap.Modal('#authModal');
+                    sessionModal.show();
+                }
+            }
+            else {
+                const errorModal = new bootstrap.Modal("#error-modal");
+                errorModal.show();
+            }
+        }
+        
+
+
+    });
+}

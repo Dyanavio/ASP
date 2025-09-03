@@ -38,6 +38,10 @@ namespace ASP.Controllers
             return View(model);
         }
 
+        public IActionResult Cart()
+        {
+            return View();
+        }
 
         public IActionResult Admin()
         {

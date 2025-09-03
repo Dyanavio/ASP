@@ -13,5 +13,6 @@ namespace ASP.Data.Entities
 
         [JsonIgnore]
         public List<UserAccess> UserAccesses { get; set; } = [];
+        public ICollection<Cart> Carts { get; set; } = [];
     }
 }

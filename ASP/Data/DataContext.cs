@@ -12,6 +12,8 @@ namespace ASP.Data
         public DbSet<ProductGroup> ProductGroups { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ItemImage> ItemImages { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         public DataContext(DbContextOptions options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,6 +24,10 @@ namespace ASP.Data
 
             modelBuilder.Entity<AccessToken>().HasKey(at => at.Jti);
             modelBuilder.Entity<AccessToken>().HasOne(at => at.UserAccess).WithMany().HasForeignKey(at => at.Sub);
+
+            modelBuilder.Entity<Cart>().HasOne(c => c.User).WithMany(u => u.Carts).HasForeignKey(c => c.UserId);
+            modelBuilder.Entity<CartItem>().HasOne(ci => ci.Cart).WithMany(u => u.CartItems); 
+            modelBuilder.Entity<CartItem>().HasOne(ci => ci.Product).WithMany();
 
             // ======= CONFIGURATIONS =======
             modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());

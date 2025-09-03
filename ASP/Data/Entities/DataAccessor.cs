@@ -128,7 +128,9 @@ namespace ASP.Data.Entities
             }
         }
 
-
-        
+        public void AddToCart(string userId, string id)
+        {
+            
+        }
     }
 }
