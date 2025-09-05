@@ -1,15 +1,19 @@
 ﻿using ASP.Data.Entities;
 using ASP.Models.Api.Group;
+using ASP.Models.Rest;
 using ASP.Services.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace ASP.Controllers.Api
 {
     [Route("api/product-group")]
     [ApiController]
-    public class ProductGroupController(DataAccessor dataAccessor, IStorageService storageService) : ControllerBase
+    public class ProductGroupController(ILogger<ProductGroupController> logger, DataAccessor dataAccessor, IStorageService storageService) : ControllerBase
     {
+
+        private readonly ILogger<ProductGroupController> _logger = logger;
         private readonly DataAccessor _dataAccessor = dataAccessor;
         private readonly IStorageService _storageService = storageService;
 
@@ -49,38 +53,64 @@ namespace ASP.Controllers.Api
         }
 
         [HttpPost]
-        public object ExecutePOST(ApiGroupFormModel formModel)
+        public RestResponse ExecutePOST(ApiGroupFormModel formModel)
         {
+            RestResponse response = new();
+            response.Meta.ResourceName = "Shop API 'product-group'";
+            response.Meta.Method = "POST";
+            response.Meta.Manipulations = ["GET", "POST", "PATCH", "DELETE"];
+
             // VALIDATION
             if (string.IsNullOrEmpty(formModel.Name))
             {
-                return new { status = 400, name = "Name must not be empty" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Name must not be empty";
+                response.Meta.DataType = "string";
             }
-            if(_dataAccessor.IsGroupNameUsed(formModel.Name))
+            else
             {
-                return new { status = 400, name = "Name is already used" };
+                if (_dataAccessor.IsGroupNameUsed(formModel.Name))
+                {
+                    response.Status = RestStatus.RestStatus400;
+                    response.Data = "Name is already used";
+                    response.Meta.DataType = "string";
+                }
             }
 
             if (string.IsNullOrEmpty(formModel.Description))
             {
-                return new { status = 400, name = "Description must not be empty" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Description must not be empty";
+                response.Meta.DataType = "string";
             }
             
             if (string.IsNullOrEmpty(formModel.Slug))
             {
-                return new { status = 400, name = "Slug must not be empty" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Slug must not be empty";
+                response.Meta.DataType = "string";
             }
-            if (_dataAccessor.IsGroupSlugUsed(formModel.Slug))
+            else
             {
-                return new { status = 400, name = "Slug is already used" };
+                if (_dataAccessor.IsGroupSlugUsed(formModel.Slug))
+                {
+                    response.Status = RestStatus.RestStatus400;
+                    response.Data = "Slug is already used";
+                    response.Meta.DataType = "string";
+                }
             }
-
-            if (formModel.ParentId != null && !Guid.TryParse(formModel.ParentId, out Guid guid))
+            if(formModel.ParentId != "None")
             {
-                return new { status = 400, name = "Invalid parent group id" };
+                if (formModel.ParentId != null && !Guid.TryParse(formModel.ParentId, out Guid guid))
+                {
+                    response.Status = RestStatus.RestStatus400;
+                    response.Data = "Invalid parent group id";
+                    response.Meta.DataType = "string";
+                }
             }
+            
 
-            string savedName;
+            string? savedName = "";
             try
             {
                 // Checking the extension
@@ -89,25 +119,36 @@ namespace ASP.Controllers.Api
             }
             catch (Exception e)
             {
-                return new { status = 400, name = e.Message };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = e.Message;
+                response.Meta.DataType = "string";
             }
-            try
+            if(!string.IsNullOrEmpty(savedName))
             {
-                _dataAccessor.AddProductGroup(new()
+                try
                 {
-                    Name = formModel?.Name!,
-                    Description = formModel?.Description!,
-                    Slug = formModel?.Slug!,
-                    ParentId = formModel?.ParentId,
-                    ImageUrl = savedName
-                });
-                return new { status = 201, name = "Created" };
+                    _dataAccessor.AddProductGroup(new()
+                    {
+                        Name = formModel?.Name!,
+                        Description = formModel?.Description!,
+                        Slug = formModel?.Slug!,
+                        ParentId = formModel?.ParentId != "None" ? formModel?.ParentId : null,
+                        ImageUrl = savedName
+                    });
+                    response.Status.StatusCode = 201;
+                    response.Status.StatusMessage = "Created";
+                    response.Meta.DataType = "string";
+                    response.Data = "Created";
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message);
+                    response.Status = RestStatus.RestStatus500;
+                    response.Data = "Server error";
+                    response.Meta.DataType = "string";
+                }
             }
-            catch(Exception)
-            {
-                return new { status = 500, name = "Server error" };
-            }
-            
+            return response;
         }
     }
 }

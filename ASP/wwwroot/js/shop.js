@@ -15,8 +15,9 @@ document.addEventListener('DOMContentLoaded', e => {
         button.addEventListener('click', addToCartClick);
     }
     const reloadButton = document.getElementById('error-modal-reload-button');
-    if (!reloadButton) throw "Element 'error-modal-reload-button' was not found";
-    reloadButton.onclick = reloadModalClick;
+    if (reloadButton) {
+        reloadButton.onclick = reloadModalClick;
+    }
 });
 
 function reloadModalClick() {
@@ -37,13 +38,15 @@ function handleAddProduct(form)
         if (!fail) throw "Element 'product-form-success-alert' was not found";
 
         console.log(j);
-        if (j.status == 201) {
+        if (j.status.statusCode == 201)
+        {
             form.reset();
             fail.classList.add('d-none');
             fail.innerText = '';
             success.classList.remove('d-none');
         }
-        else {
+        else
+        {
             success.classList.add('d-none');
             fail.classList.remove('d-none');
             fail.innerText = j.name;
@@ -65,7 +68,7 @@ function handleAddGroup(form)
         if (!fail) throw "Element 'group-form-success-alert' was not found";
 
         console.log(j);
-        if (j.status == 201) // Created
+        if (j.status.statusCode == 201) // Created
         {
             form.reset();
             fail.classList.add('d-none');
@@ -93,12 +96,12 @@ function addToCartClick(e)
     {
         console.log(j);
 
-        if (j.message == "Ok") {
+        if (j.status.statusCode == 200) {
             // ...
         }
         else
         {
-            if (j.message == 'Unauthorized') {
+            if (j.status.statusCode == 401) {
                 if (confirm("Log in to use cart. Do you want to proceed?")) {
                     const sessionModal = new bootstrap.Modal('#authModal');
                     sessionModal.show();
@@ -109,8 +112,5 @@ function addToCartClick(e)
                 errorModal.show();
             }
         }
-        
-
-
     });
 }

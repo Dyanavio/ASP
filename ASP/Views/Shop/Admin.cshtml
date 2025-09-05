@@ -37,6 +37,7 @@
         <div class="input-group mb-3">
             <label class="input-group-text" for="group-parent-id-addon">Parent group ID:</label>
             <select name="group-parent" class="form-select" id="group-parent-addon">
+                <option value="None">None</option>
                 @foreach (var option in Model.ProductGroups)
                 {
                     <option value="@option.Value">@option.Content</option>

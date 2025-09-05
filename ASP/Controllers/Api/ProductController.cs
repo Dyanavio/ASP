@@ -3,14 +3,18 @@ using ASP.Services.Storage;
 using Microsoft.AspNetCore.Mvc;
 using ASP.Filters;
 using ASP.Data.Entities;
+using ASP.Models.Rest;
 
 namespace ASP.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
     [AuthorizationFilter]
-    public class ProductController(IStorageService storageService, DataAccessor dataAccessor) : ControllerBase
+    public class ProductController(ILogger<ProductController> logger,
+                                   IStorageService storageService, 
+                                   DataAccessor dataAccessor) : ControllerBase
     {
+        private readonly ILogger<ProductController> _logger = logger;
         private readonly IStorageService _storageService = storageService;
         private readonly DataAccessor _dataAccessor = dataAccessor;
 
@@ -21,23 +25,40 @@ namespace ASP.Controllers.Api
         }
 
         [HttpPost]
-        public async Task<object> CreateProduct(ApiProductFormModel formModel)
+        public async Task<RestResponse> CreateProduct(ApiProductFormModel formModel)
         {
+            RestResponse response = new();
+            response.Meta.ResourceName = "Shop API 'product'";
+            response.Meta.Method = "POST";
+            response.Meta.Manipulations = ["GET", "POST", "PATCH", "DELETE"];
+
             //VALIDATION
             if (string.IsNullOrEmpty(formModel.Name))
             {
-                return new { status = 400, name = "Name must not be empty" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Name must not be empty";
+                response.Meta.DataType = "string";
             }
-            if (_dataAccessor.IsProductNameUsed(formModel.Name))
+            else
             {
-                return new { status = 400, name = "Name is already used" };
+                if (_dataAccessor.IsProductNameUsed(formModel.Name))
+                {
+                    response.Status = RestStatus.RestStatus400;
+                    response.Data = "Name is already used";
+                    response.Meta.DataType = "string";
+                }
             }
+            
 
             if (!string.IsNullOrEmpty(formModel.Slug))
             {
                 if (_dataAccessor.IsProductSlugUsed(formModel.Slug))
                 {
-                    return new { status = 409, name = "Slug is already used" };
+                    response.Status.StatusCode = 409;
+                    response.Status.StatusMessage = "Conflict";
+                    response.Status.IsOk = false;
+                    response.Data = "Slug is already used";
+                    response.Meta.DataType = "string";
                 }
             }
 
@@ -45,27 +66,35 @@ namespace ASP.Controllers.Api
             {
                 if (double.IsNaN((double)formModel.Price))
                 {
-                    return new { status = 400, name = "Price is not a propert number" };
+                    response.Status = RestStatus.RestStatus400;
+                    response.Data = "Price is not a propert number";
+                    response.Meta.DataType = "string";
                 }
             }
             else
             {
-                return new { status = 400, name = "Price must not be empty" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Price must not be empty";
+                response.Meta.DataType = "string";
             }
 
             if (formModel.Stock != null)
             {
                 if (double.IsNaN((int)formModel.Stock))
                 {
-                    return new { status = 400, name = "Stock number/amount is not a propert value" };
+                    response.Status = RestStatus.RestStatus400;
+                    response.Data = "Stock number/amount is not a propert value";
+                    response.Meta.DataType = "string";
                 }
             }
             else
             {
-                return new { status = 400, name = "Stock number/amount must not be empty" };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = "Stock number/amount must not be empty";
+                response.Meta.DataType = "string";
             }
 
-                string? savedName = null;
+            string? savedName = null;
             if(formModel.Image != null)
             {
                 try
@@ -76,7 +105,9 @@ namespace ASP.Controllers.Api
                 }
                 catch (Exception e)
                 {
-                    return new { status = 400, name = e.Message };
+                    response.Status = RestStatus.RestStatus400;
+                    response.Data = e.Message;
+                    response.Meta.DataType = "string";
                 }
             }
             try
@@ -91,16 +122,25 @@ namespace ASP.Controllers.Api
                     Stock = (int)formModel!.Stock!,
                     ImageUrl = savedName
                 });
-                return new { status = 201, name = "Created" };
+                response.Status.StatusCode = 201;
+                response.Status.StatusMessage = "Created";
+                response.Meta.DataType = "string";
+                response.Data = "Created";
             }
             catch(Exception e) when (e is ArgumentNullException || e is FormatException)
             {
-                return new { status = 400, name = e.Message };
+                response.Status = RestStatus.RestStatus400;
+                response.Data = e.Message;
+                response.Meta.DataType = "string";
             }
             catch (Exception e)
             {
-                return new { status = 500, name =e.Message };
+                _logger.LogError(e.Message);
+                response.Status = RestStatus.RestStatus500;
+                response.Data = e.Message;
+                response.Meta.DataType = "string";
             }
+            return response;
         }
     }
 }
