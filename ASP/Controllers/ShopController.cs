@@ -1,6 +1,7 @@
 ﻿using ASP.Data.Entities;
 using ASP.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ASP.Controllers
 {
@@ -40,11 +41,20 @@ namespace ASP.Controllers
 
         public IActionResult Cart()
         {
-            return View();
+
+            ShopCartPageModel model = new();
+            if(HttpContext.User.Identity?.IsAuthenticated ?? false)
+            {
+                string? userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.PrimarySid)!.Value;
+                model.ActiveCartItems = _dataAccessor.GetActiveCartItems(userId);
+            }
+            
+            return View(model);
         }
 
         public IActionResult Admin()
         {
+            
             ShopAdminPageModel model = new()
             {
                 ProductGroups = _dataAccessor.GetProductGroups().Select(g => new Models.OptionModel()

@@ -36,7 +36,7 @@ namespace ASP.Middleware.Authentication
                             new(ClaimTypes.Name, ua.UserData.Name), // Mapping: changing model (creating a dictionary) from ua.UserAccess to the set of Claim(s)
                             new(ClaimTypes.Email, ua.UserData.Email),
                             new(ClaimTypes.Sid, ua.Login), // Sid - secure id = login
-                            new(ClaimTypes.PrimarySid, ua.Id.ToString())
+                            new(ClaimTypes.PrimarySid, ua.UserData.Id.ToString())
                         },
                         nameof(AuthSessionMiddleware) // Here we indicate the provider of data
                     )

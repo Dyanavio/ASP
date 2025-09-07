@@ -128,3 +128,10 @@ body {
     text-align: center;
     font-size: 42px;
 }
+
+.item-cart-container
+{
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 15px;
+}

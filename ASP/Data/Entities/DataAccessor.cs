@@ -66,7 +66,7 @@ namespace ASP.Data.Entities
                 Price = model.Price,
                 Stock = model.Stock,
                 DeletedAt = null,
-                
+
             });
             try
             {
@@ -109,7 +109,7 @@ namespace ASP.Data.Entities
         public async Task<bool> DeleteUserAsync(string login)
         {
             UserAccess? ua = await _dataContext.UserAccesses.Include(ua => ua.UserData).FirstOrDefaultAsync(ua => ua.Login == login);
-            if(ua == null) return false;
+            if (ua == null) return false;
 
             ua.UserData.Birthdate = null;
             ua.UserData.Name = "";
@@ -121,16 +121,74 @@ namespace ASP.Data.Entities
                 await _dataContext.SaveChangesAsync();
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogWarning("DeleteUserAsync: {e}", e.Message);
                 return false;
             }
         }
 
-        public void AddToCart(string userId, string id)
+        public void AddToCart(string userId, string productId)
         {
-            
+            Guid userGuid = Guid.Parse(userId);
+            Guid productGuid = Guid.Parse(productId);
+
+            var user = _dataContext.Users.Find(userGuid) ?? throw new ArgumentException("user was not found", nameof(userId)); ; // Find searches by primary key
+            var product = _dataContext.Products.Find(productGuid) ?? throw new ArgumentException("product was not found", nameof(productId));
+
+            // If user has an open cart, and
+            //      if the cart already has this item, then increase the number
+            //      otherwise add a new CartItem
+            // otherwise create a new cart and add the item
+
+            var cart = _dataContext.Carts.Include(c => c.CartItems).FirstOrDefault(c => c.UserId == userGuid && c.PaidAt == null && c.DeletedAt == null);
+            if (cart == null)
+            {
+                cart = new Cart()
+                {
+                    Id = Guid.NewGuid(),
+                    CreatedAt = DateTime.Now,
+                    Price = 0,
+                    UserId = userGuid,
+                };
+                _dataContext.Carts.Add(cart);
+            }
+
+            CartItem? cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productGuid);
+            if (cartItem == null)
+            {
+                cartItem = new CartItem()
+                {
+                    Id = Guid.NewGuid(),
+                    CartId = cart.Id,
+                    Price = product.Price,
+                    Quantity = 1,
+                    ProductId = productGuid
+                };
+                _dataContext.CartItems.Add(cartItem);
+                cart.Price += cartItem.Price; // TODO: DiscountService
+            }
+            else
+            {
+                cartItem.Quantity += 1;
+                cartItem.Price += product.Price;
+                cart.Price += product.Price; // TODO: DiscountService
+            }
+            _dataContext.SaveChanges();
+        }
+
+        public IEnumerable<CartItem> GetActiveCartItems(string userId)
+        {
+            Guid userGuid = Guid.Parse(userId);
+            var user = _dataContext.Users.Find(userGuid) ?? throw new ArgumentException("user was not found", nameof(userId)); ; // Find searches by primary key
+
+            var cart = _dataContext.Carts.AsNoTracking().Include(c => c.CartItems).ThenInclude(ci => ci.Product).FirstOrDefault(c => c.UserId == userGuid && c.PaidAt == null && c.DeletedAt == null);
+
+            return cart?.CartItems ?? [];
+        }
+        public IEnumerable<Cart> GetCarts()
+        {
+            return [];
         }
     }
 }

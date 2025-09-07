@@ -1,7 +1,47 @@
-﻿@{
+﻿@model ASP.Models.Shop.ShopCartPageModel
+@{
 	ViewData["Title"] = "Cart";
 }
 
 <div class="text-center">
 	<h1 class="display-4">My cart</h1>
 </div>
+@if(Model.ActiveCartItems == null)
+{
+	<div class="alert alert-dark" role="alert"><i class="bi bi-bank"></i> IchTamNet. Cart is only available after signing in</div>
+}
+else if(Model.ActiveCartItems.Count() == 0)
+{
+	<div class="alert alert-dark" role="alert">Wow, such emptiness. Consider adding items to your cart</div>
+}
+else
+{
+	foreach(var cartItem in Model.ActiveCartItems)
+	{
+		<div class="item-cart-container mt-1">
+			<div class="row mt-2">
+				<div class="col col-lg-1 col-md-3 col-sm-12 d-flex flex-column justify-content-center border border-dark border-3 rounded">
+					<a asp-action="Item" asp-route-id="@(cartItem.Product.Slug ?? cartItem.Product.Id.ToString())">
+						<img class="w-100 h-auto" src="/Storage/Item/@(cartItem.Product.ImageUrl)" alt="@(cartItem.Product.Name)" />
+					</a>
+				</div>
+				<div class="col col-lg-4 col-md-4 col-sm-12 d-flex flex-column justify-content-center">@cartItem.Product.Name<br />@cartItem.Product.Description</div>
+				<div class="col col-lg-2 col-md-2 col-sm-3 d-flex flex-column justify-content-center">£ @cartItem.Product.Price</div>
+				<div class="col col-lg-2 col-md-2 col-sm-3 d-flex flex-column justify-content-center">
+					<div>
+						<button class="btn btn-outline-secondary">-</button>
+						@cartItem.Quantity
+						<button class="btn btn-outline-secondary">+</button>
+					</div>
+				</div>
+				<div class="col col-lg-2 offset-lg-0 col-md-3 offset-md-7 col-sm-3 d-flex flex-column justify-content-center">£ @cartItem.Price</div>
+				<div class="col col-lg-1 col-md-2 col-sm-3 d-flex flex-column justify-content-center">
+					<div class="w-50">
+						<button class="btn btn-outline-danger ">X</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	}
+}

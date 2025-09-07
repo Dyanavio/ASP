@@ -8,8 +8,9 @@ namespace ASP.Controllers.Api
 {
     [Route("api/cart")]
     [ApiController]
-    public class CartController(DataAccessor dataAccessor) : ControllerBase
+    public class CartController(ILogger<CartController> logger, DataAccessor dataAccessor) : ControllerBase
     {
+        private readonly ILogger<CartController> _logger = logger;
         private readonly DataAccessor _dataAccessor = dataAccessor;
 
         [HttpPost("{id}")]
@@ -34,15 +35,16 @@ namespace ASP.Controllers.Api
                 {
                     _dataAccessor.AddToCart(userId, id);
                 }
-                catch(Exception e) when (e is ArgumentNullException || e is FormatException)
+                catch(Exception e) when (e is ArgumentException || e is ArgumentNullException || e is FormatException)
                 {
                     response.Status = RestStatus.RestStatus400;
                     response.Data = e.Message;
                     response.Meta.DataType = "string";
                 }
-                catch
+                catch(Exception e)
                 {
                     response.Status = RestStatus.RestStatus500;
+                    _logger.LogError("AddToCart {e}", e.Message);
                 }
             }
             else
