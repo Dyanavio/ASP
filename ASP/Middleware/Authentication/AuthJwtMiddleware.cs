@@ -31,8 +31,8 @@ namespace ASP.Middleware.Authentication
                              new ClaimsIdentity(
                                  new Claim[]
                                  {
-                                 new(ClaimTypes.Name, payloadElement.GetProperty("Name").GetString()!),
-                                 new(ClaimTypes.Email, payloadElement.GetProperty("Email").GetString()!),
+                                     new(ClaimTypes.Name, payloadElement.GetProperty("Name").GetString()!),
+                                     new(ClaimTypes.Email, payloadElement.GetProperty("Email").GetString()!),
                                  },
                                  nameof(AuthJwtMiddleware)
                              )
