@@ -1,6 +1,7 @@
 using ASP.Data;
 using ASP.Data.Entities;
 using ASP.Middleware.Authentication;
+using ASP.Middleware.Cart;
 using ASP.Services.Email;
 using ASP.Services.Identity;
 using ASP.Services.Jwt;
@@ -74,6 +75,7 @@ namespace ASP
             app.UseAuthSession();
             //app.UseAuthToken();
             app.UseAuthJwt();
+            app.UseUserCart();
 
             // ========================================
 

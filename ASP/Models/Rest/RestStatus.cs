@@ -19,12 +19,23 @@
             StatusCode = 401,
             StatusMessage = "Unauthorized"
         };
-        
         public static readonly RestStatus RestStatus403 = new()
         {
             IsOk = false,
             StatusCode = 403,
             StatusMessage = "Forbidden"
+        };
+        public static readonly RestStatus RestStatus409 = new()
+        {
+            IsOk = false,
+            StatusCode = 409,
+            StatusMessage = "Conflict"
+        };
+        public static readonly RestStatus RestStatus418 = new()
+        {
+            IsOk = false,
+            StatusCode = 418,
+            StatusMessage = "I'm a teapot"
         };
 
         public static readonly RestStatus RestStatus500 = new()

@@ -29,15 +29,15 @@ else
 				<div class="col col-lg-2 col-md-2 col-sm-3 d-flex flex-column justify-content-center">£ @cartItem.Product.Price</div>
 				<div class="col col-lg-2 col-md-2 col-sm-3 d-flex flex-column justify-content-center">
 					<div>
-						<button class="btn btn-outline-secondary">-</button>
+						<button data-increment="-1" data-cart-product-id="@cartItem.Product.Id" class="btn btn-outline-secondary">-</button>
 						@cartItem.Quantity
-						<button class="btn btn-outline-secondary">+</button>
+						<button data-increment="1" data-cart-product-id="@cartItem.Product.Id" class="btn btn-outline-secondary">+</button>
 					</div>
 				</div>
 				<div class="col col-lg-2 offset-lg-0 col-md-3 offset-md-7 col-sm-3 d-flex flex-column justify-content-center">£ @cartItem.Price</div>
 				<div class="col col-lg-1 col-md-2 col-sm-3 d-flex flex-column justify-content-center">
 					<div class="w-50">
-						<button class="btn btn-outline-danger ">X</button>
+						<button data-cart-product-to-delete-id="@cartItem.Product.Id" class="btn btn-outline-danger">X</button>
 					</div>
 				</div>
 			</div>
@@ -45,3 +45,38 @@ else
 		
 	}
 }
+
+<div class="modal" id="error-modal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="d-flex align-items-start error-modal-header modal-header justify-content-center">
+				<div style="width:99%">
+					<div class="icon-box">
+						<i class="bi bi-stack-overflow"></i>
+					</div>
+				</div>
+				<div style="width: 1%">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+			</div>
+			<div class="modal-body text-center">
+				<h4>Item is out of stock</h4>
+				<p>See the product page for details</p>
+				<button class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+	<div id="remove-from-cart-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="toast-header">
+			<i class="bi bi-square-fill text-success-emphasis"> </i> 
+			<strong class="me-auto"> System</strong>
+			<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+		<div class="toast-body">
+			Your cart has been updated
+		</div>
+	</div>
+</div>

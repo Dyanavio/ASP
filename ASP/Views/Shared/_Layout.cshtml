@@ -4,6 +4,8 @@
     bool isAuthenticated = Context.User.Identity?.IsAuthenticated ?? false;
     string name = isAuthenticated ? Context.User.Claims.First(c => c.Type == ClaimTypes.Name).Value : "";
     string userLogin = isAuthenticated ? Context.User.Claims.First(c => c.Type == ClaimTypes.Sid).Value : "";
+    UserCartModel? userCartModel = Context.Items.ContainsKey(nameof(UserCartModel)) ? Context.Items[nameof(UserCartModel)] as UserCartModel : null;
+    double totalPrice = userCartModel?.ActiveCart?.Price ?? -1;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -53,10 +55,31 @@
                     <div style="display: flex; flex-direction: row">
                         @if (isAuthenticated)
                         {
-                            <a class="btn btn-outline-danger" href="?logout"><i class="bi bi-box-arrow-left"></i> </a> 
-                            <a class="nav-link text-dark login-icon mx-2" title="@name" id="login-icon" asp-area="" asp-controller="User" asp-action="Profile" asp-route-id="@userLogin">
-                                @name[0]
-                            </a>
+                            <div class="row">
+                                <div class="col-5 d-flex flex-column justify-content-center">
+                                    <a class="btn btn-dark" asp-controller="Shop" asp-action="Cart">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <i class="bi bi-bag"></i>
+                                                <span>@(userCartModel?.ActiveCart?.CartItems.Count() ?? 0)</span>
+                                            </div>
+                                            <div class="col-12">
+                                                <span>@("£" + (totalPrice != -1 ? totalPrice : ""))</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-3 d-flex flex-column justify-content-center">
+                                    <a class="btn btn-outline-danger text-danger" href="?logout"><i class="bi bi-box-arrow-left"></i></a>
+                                </div>
+                                <div class="col-4 d-flex flex-column justify-content-center">
+                                    <a class="nav-link text-dark login-icon " title="@name" id="login-icon" asp-area="" asp-controller="User" asp-action="Profile" asp-route-id="@userLogin">
+                                        @name[0]
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            
                         }
                         else
                         {

@@ -1,6 +1,8 @@
 ﻿using ASP.Models.Api.Group;
 using ASP.Models.Api.Product;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ASP.Data.Entities
 {
@@ -98,7 +100,7 @@ namespace ASP.Data.Entities
         public UserAccess? GetUserAccessByLogin(string userLogin, bool isEditable = false)
         {
             IQueryable<UserAccess> source = _dataContext.UserAccesses.Include(ua => ua.UserData).Include(ua => ua.UserRole);
-            if (isEditable) source = source.AsNoTracking();
+            if (!isEditable) source = source.AsNoTracking();
             return source.FirstOrDefault(ua => ua.Login == userLogin && ua.UserData.DeletedAt == null);
         }
 
@@ -179,16 +181,81 @@ namespace ASP.Data.Entities
 
         public IEnumerable<CartItem> GetActiveCartItems(string userId)
         {
-            Guid userGuid = Guid.Parse(userId);
-            var user = _dataContext.Users.Find(userGuid) ?? throw new ArgumentException("user was not found", nameof(userId)); ; // Find searches by primary key
-
-            var cart = _dataContext.Carts.AsNoTracking().Include(c => c.CartItems).ThenInclude(ci => ci.Product).FirstOrDefault(c => c.UserId == userGuid && c.PaidAt == null && c.DeletedAt == null);
-
+            var cart = GetActiveCart(userId);
             return cart?.CartItems ?? [];
         }
         public IEnumerable<Cart> GetCarts()
         {
             return [];
+        }
+        public Cart? GetActiveCart(string userId, bool isEditable = false) 
+        {
+            Guid userGuid = Guid.Parse(userId);
+            var user = _dataContext.Users.Find(userGuid) ?? throw new ArgumentException("user was not found", nameof(userId)); ; // Find searches by primary key
+
+            IQueryable<Cart> source = _dataContext.Carts.Include(c => c.CartItems).ThenInclude(ci => ci.Product);
+            if (!isEditable) source = source.AsNoTracking();
+
+            return source.FirstOrDefault(c => c.UserId == userGuid && c.PaidAt == null && c.DeletedAt == null);
+
+        }
+        public void ModifyCart(string userId, string productId, int increment)
+        {
+            Guid userGuid = Guid.Parse(userId);
+            Guid productGuid = Guid.Parse(productId);
+
+            var user = _dataContext.Users.Find(userGuid) ?? throw new ArgumentException("user was not found", nameof(userId)); ; // Find searches by primary key
+            Cart cart = GetActiveCart(userId, isEditable: true) ?? throw new ArgumentException("active cart was not found");
+
+            // If the cart does not contain the product, the query is incorrect
+            CartItem cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productGuid) ?? throw new ArgumentException("product was not found", nameof(productId));
+
+            // If increment is negative and the result becomes negative, then that's an error
+            int newQuantity = cartItem.Quantity + increment;
+            if(newQuantity < 0)
+            {
+                throw new ArgumentException("incremenet causes negative quantity");
+            }
+            // If increment overflows the number of products in stock, then that's an error
+            if (newQuantity > cartItem.Product.Stock)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if(newQuantity == 0)
+            {
+                // Delete...
+                _dataContext.CartItems.Remove(cartItem);
+            }
+            else
+            {
+                cartItem.Quantity = newQuantity;
+                // TODO: DiscountService
+                cartItem.Price += increment * cartItem.Product.Price;
+                cart.Price += increment * cartItem.Product.Price;
+            }
+            _dataContext.SaveChanges();
+        }
+
+        public void RemoveFromCart(string userId, string productId)
+        {
+            Guid userGuid = Guid.Parse(userId);
+            Guid productGuid = Guid.Parse(productId);
+
+            var user = _dataContext.Users.Find(userGuid) ?? throw new ArgumentException("user was not found", nameof(userId)); ; // Find searches by primary key
+            Cart cart = GetActiveCart(userId, isEditable: true) ?? throw new ArgumentException("active cart was not found");
+
+            CartItem cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productGuid) ?? throw new ArgumentException("product was not found", nameof(productId));
+
+            if (!cart.CartItems.Contains(cartItem))
+            {
+                throw new InvalidDataException("Cart has no such item");
+            }
+
+            cart.Price -= cartItem.Price;
+
+            _dataContext.CartItems.Remove(cartItem);
+            _dataContext.SaveChanges();
+
         }
     }
 }
