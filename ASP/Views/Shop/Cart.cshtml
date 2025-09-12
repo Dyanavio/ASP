@@ -16,35 +16,83 @@ else if(Model.ActiveCartItems.Count() == 0)
 }
 else
 {
-	foreach(var cartItem in Model.ActiveCartItems)
-	{
-		<div class="item-cart-container mt-1">
-			<div class="row mt-2">
-				<div class="col col-lg-1 col-md-3 col-sm-12 d-flex flex-column justify-content-center border border-dark border-3 rounded">
-					<a asp-action="Item" asp-route-id="@(cartItem.Product.Slug ?? cartItem.Product.Id.ToString())">
-						<img class="w-100 h-auto" src="/Storage/Item/@(cartItem.Product.ImageUrl)" alt="@(cartItem.Product.Name)" />
-					</a>
-				</div>
-				<div class="col col-lg-4 col-md-4 col-sm-12 d-flex flex-column justify-content-center">@cartItem.Product.Name<br />@cartItem.Product.Description</div>
-				<div class="col col-lg-2 col-md-2 col-sm-3 d-flex flex-column justify-content-center">£ @cartItem.Product.Price</div>
-				<div class="col col-lg-2 col-md-2 col-sm-3 d-flex flex-column justify-content-center">
-					<div>
-						<button data-increment="-1" data-cart-product-id="@cartItem.Product.Id" class="btn btn-outline-secondary">-</button>
-						@cartItem.Quantity
-						<button data-increment="1" data-cart-product-id="@cartItem.Product.Id" class="btn btn-outline-secondary">+</button>
+	<div class="container">
+
+	
+		@foreach(var cartItem in Model.ActiveCartItems)
+		{
+			<div class="item-cart-container mt-1 pb-2">
+				<div class="row mt-2">
+					<div class="col col-lg-1 col-md-3 col-sm-12 d-flex flex-column justify-content-center border border-dark border-3 rounded">
+						<a asp-action="Item" asp-route-id="@(cartItem.Product.Slug ?? cartItem.Product.Id.ToString())">
+							<img class="w-100 h-auto" src="/Storage/Item/@(cartItem.Product.ImageUrl)" alt="@(cartItem.Product.Name)" />
+						</a>
 					</div>
-				</div>
-				<div class="col col-lg-2 offset-lg-0 col-md-3 offset-md-7 col-sm-3 d-flex flex-column justify-content-center">£ @cartItem.Price</div>
-				<div class="col col-lg-1 col-md-2 col-sm-3 d-flex flex-column justify-content-center">
-					<div class="w-50">
-						<button data-cart-product-to-delete-id="@cartItem.Product.Id" class="btn btn-outline-danger">X</button>
+					<div class="col col-lg-4 col-md-4 col-sm-12 d-flex flex-column justify-content-center">@cartItem.Product.Name<br />@cartItem.Product.Description</div>
+					<div class="col col-lg-2 col-md-2 col-sm-3 d-flex flex-column justify-content-center">£ @cartItem.Product.Price</div>
+					<div class="col col-lg-2 col-md-2 col-sm-3 d-flex flex-column justify-content-center">
+						<div>
+							<button data-increment="-1" data-cart-product-id="@cartItem.Product.Id" class="btn btn-outline-secondary">-</button>
+							@cartItem.Quantity
+							<button data-increment="1" data-cart-product-id="@cartItem.Product.Id" class="btn btn-outline-secondary">+</button>
+						</div>
+					</div>
+					<div class="col col-lg-2 offset-lg-0 col-md-3 offset-md-7 col-sm-3 d-flex flex-column justify-content-center">£ @cartItem.Price</div>
+					<div class="col col-lg-1 col-md-2 col-sm-3 d-flex flex-column justify-content-center">
+						<div class="w-50">
+							<button data-cart-product-to-delete-id="@cartItem.Product.Id" class="btn btn-outline-danger">X</button>
+						</div>
 					</div>
 				</div>
 			</div>
+		}
+		<div class="py-3">
+			<div class="row py-2 border-0 rounded-1" style="background-color: slategray;">
+				<div class="col offset-5 col-2 d-flex flex-column justify-content-center fw-bold ps-2">
+					Total:
+				</div>
+				<div id="total-quantity" class="col col-2 d-flex flex-column justify-content-center fw-bold ps-2">
+					@(Model.ActiveCartItems?.Sum(ci => ci.Quantity) ?? 0)
+				</div>
+				<div id="total-price" class="col col-2 d-flex flex-column justify-content-center fw-bold">
+					£ @(Model.ActiveCartItems?.First().Cart.Price ?? 0)
+				</div>
+			</div>
+			<div class="row mt-5">
+				<div class="col pe-2"><a asp-action="Index" class="w-100 btn btn-dark">To Store</a></div>
+				<div class="col px-2"><button id="button-checkout-cart" class="w-100 btn btn-primary">Buy</button></div>
+				<div class="col ps-2"><button id="button-discard-cart" class="w-100 btn btn-danger">Cancel</button></div>
+			</div>
 		</div>
-		
-	}
+	</div>
 }
+
+
+
+
+<div class="modal" id="delete-cart-modal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="d-flex align-items-start delete-cart-modal-header modal-header justify-content-center">
+				<div style="width:99%">
+					<div class="icon-box">
+						<i class="bi bi-trash-fill"></i>
+					</div>
+				</div>
+				<div style="width: 1%">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+			</div>
+			<div class="modal-body text-center">
+				<h4>Cancelling purchase?</h4>
+				<p id="delete-cart-items-message"></p>
+				<button id="discard-cart-button" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+				<button class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 
 <div class="modal" id="error-modal" tabindex="-1">
 	<div class="modal-dialog">

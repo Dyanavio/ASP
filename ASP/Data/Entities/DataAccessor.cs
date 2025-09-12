@@ -224,6 +224,7 @@ namespace ASP.Data.Entities
             if(newQuantity == 0)
             {
                 // Delete...
+                cart.Price -= cartItem.Price;
                 _dataContext.CartItems.Remove(cartItem);
             }
             else
@@ -233,6 +234,20 @@ namespace ASP.Data.Entities
                 cartItem.Price += increment * cartItem.Product.Price;
                 cart.Price += increment * cartItem.Product.Price;
             }
+            _dataContext.SaveChanges();
+        }
+
+        public void CheckoutActiveCart(string userId)
+        {
+            Cart cart = GetActiveCart(userId, isEditable: true) ?? throw new ArgumentException("active cart was not found");
+            cart.PaidAt = DateTime.Now;
+            _dataContext.SaveChanges();
+        }
+
+        public void DiscardActiveCart(string userId)
+        {
+            Cart cart = GetActiveCart(userId, isEditable: true) ?? throw new ArgumentException("active cart was not found");
+            cart.DeletedAt = DateTime.Now;
             _dataContext.SaveChanges();
         }
 

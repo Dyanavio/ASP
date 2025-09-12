@@ -33,7 +33,61 @@ document.addEventListener('DOMContentLoaded', e => {
         window.location.hash = "";
     }
 
+    let buttonDiscard = document.getElementById('button-discard-cart');
+    if (buttonDiscard) { buttonDiscard.onclick = showDiscardCartModal; }
+
+    let buttonCheckout = document.getElementById('button-checkout-cart');
+    if (buttonCheckout) { buttonCheckout.onclick = checkoutCartClick; }
+    
+    const button = document.getElementById('discard-cart-button');
+    if (button) button.onclick = discardCartClick;
+   
+
 });
+
+function showDiscardCartModal()
+{
+    const p = document.getElementById('delete-cart-items-message');
+    p.innerText = `You are about to delete your cart and all items in it: ${document.getElementById('total-quantity').innerText} items for ${document.getElementById('total-price').innerText}. Do you want to proceed?`;
+
+    const discardModal = new bootstrap.Modal('#delete-cart-modal');
+    discardModal.show();
+}
+
+function discardCartClick()
+{
+    fetch("/api/cart", {
+        method: 'Delete'
+    }).then(r => r.json()).then(j => {
+        if (j.status.isOk) {
+            alert("Cart deleted");
+            window.location = "/Shop";
+        }
+        else {
+            alert(j.data);
+        }
+    });
+    
+}
+
+function checkoutCartClick()
+{
+    if (confirm(`Your purchase: ${document.getElementById('total-quantity').innerText} for ${document.getElementById('total-price').innerText}`))
+    {
+        fetch("/api/cart", {
+            method: 'PUT'
+        }).then(r => r.json()).then(j => {
+            if (j.status.isOk) {
+                alert("Thanks for the purchase (money)");
+                window.location = "/Shop";
+            }
+            else {
+                alert(j.data);
+            }
+        });
+    }
+    
+}
 
 function removeFromCartClick(e)
 {
