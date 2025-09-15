@@ -73,9 +73,10 @@ As was previously mentioned, all tools for moderators to manage the shop are at 
 Here is the product's page. For swift navigation there is a carousel of groups with respective links  
 ![Text](ASP/Screenshots/ToReadme/img7.png)
 
-
+Here is your cart
 ![Text](ASP/Screenshots/ToReadme/img8.png)
 
+And one of the previous purchases
 ![Text](ASP/Screenshots/ToReadme/img10.png)
 
 ### Display
@@ -94,7 +95,7 @@ If the model type is complex (collection) or name is impossible, then template i
 
 ![Text](ASP/Screenshots/ToReadme/img14.png)
 
-#### MVC and API
+### MVC and API
 **Differences between MVC and API controllers**
 
 + MVC: one method (usually GET) and different addresses (You can reach ONE address with ONE method, action is determined by address)
@@ -111,9 +112,67 @@ PUT  /api/product
 MVC - returns IActionResult
 API - returns objects of an arbitrary type that ASP changes them to JSON (except for string, it changes to plain/text)
 
-#### Careful now
+### Careful now
 All your actions have a confirmation stage
 ![Text](ASP/Screenshots/ToReadme/img12.png)
+
+### Inversion of control
+Inversion of Control (IoC) is an architectural pattern that selects a separate component (container/injector) which controls other objects' life cycles.
+One can say it is the dependencies that are used (i.e. variables that are set by the container while the object is being constructed) instead of new Object.
+__Organization consists of several stages:__
++ Describing shared classes (services)
++ Registration of classes in container and stating their type of life cycle
++ Declaring the dependencies in other classes (controller)
++ Launching Resolve to determine the order of implementation of dependencies(creating objects)
+
+DIP (_Dependency inversion principle_) - is one of the SOLID principles that recommends to create dependencies from abstraction of highest level.
+Services are described together with interface. Conclusion: a new minimal service is basically two elements: interface and a class.
+
+DI - Dependency Injection - is a way to realise IoC by passing references to the service objects at the points of injection
+
+### Middleware brief scheme
+#### HTTP Request
+Browser                                                                                        Server
+     HTTP ------------------------------------------------------------------------------------> [WebServer: IIS/Kestrel]
+                                                                                                Forms HttpContext {
+          Path        Protocol                                                                              Request: {
+POST   /Home/Privacy   HTTP/1.1                     1st part                                                    Method: "POST"  
+Host: localhost:1234                                2nd part: Headers                                           Path: "/Home/Privacy"
+Connection: close                                                                                               Headers: [ {Connection: close }], ...
+Authorization: Basic 2esdweyewt324=                                                                             Body: "x=10&y=20    
+Content-Type: application/x-www-form-urlencoded     Required if there is a body                              }
+                                                                                                             Response: {...}
+x=10&y=20                                           3rd part: Body                                           User: null
+                                                                                                             Session: null
+                                                                                                             WebSocket: null
+                                                                                                            }
+                                                                                                             | Middleware
+                                                                                                            userSession
+                                                                                                             |
+                                                                                                             HttpContext.Session = ...
+                                                                                                             |
+                                                                                                            AuthSessionMiddleware
+                                                                                                             |
+                                                                                                             HttpContext.User = HttpContext.Session[]
+                                                                                                             |
+                                                                                                            return Redirect()
+                                                                                                             |
+                                                                                                             HttpContext.Response:{
+                                                                                                                     StatusCode: 302
+                                                                                                                     Location: "/Home/"
+                                                                                                             }
+                                                                                                             [WebServer: IIS/Kestrel]
+              <---------------------------------------------------------------------------------------------
+                                                HTTP/1.1 302 Found
+                                                Connection: close
+                                                Location: "/Home"
+                                                Server: "Kestrel"
+
+
+
+### SPA
+SPA technology provides minimum number of page refreshes. Content is changes via JS or its frameworks.  
+Actually, the page remains unchanged (Single) while its content is redrawn.
 
 And of course there would be some tabs created purely for practical uses...
 ![Text](ASP/Screenshots/ToReadme/img13.png)
