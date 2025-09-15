@@ -111,7 +111,6 @@ PUT  /api/product
 MVC - returns IActionResult
 API - returns objects of an arbitrary type that ASP changes them to JSON (except for string, it changes to plain/text)
 
-![Text](ASP/Screenshots/ToReadme/img11.png)
 ![Text](ASP/Screenshots/ToReadme/img12.png)
 
 And of course there would be some tabs created purely for practical uses...
