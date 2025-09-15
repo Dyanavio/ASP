@@ -35,9 +35,9 @@ Then one creates View itself. If name corresponds to the type name of the model 
 If the model type is complex (collection) or name is impossible, then template is declared directly @Html.FisplayFor(m => group, "Tepmlate name")
 
 ```
-@foreach(var group in Model.ProductGroups)
+@foreach (var p in Model.ProductGroup.Products)
 {
-    @Html.DisplayFor(m => group);
+	@Html.DisplayFor(m => p)
 }
 ```
 
