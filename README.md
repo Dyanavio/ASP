@@ -56,10 +56,10 @@ Some with moderator role or higher can do the same with products and their group
 Here for example is log in modal:
 ![Text](ASP/Screenshots/ToReadme/img2.png)
 
-This is what expects user befire creating their account. Do not mind the theory thought...
+This is what expects user befire creating their account. _Do not mind the theory thought..._
 ![Text](ASP/Screenshots/ToReadme/img3.png)
 
-
+All CRUD processes are followed by validation
 ![Text](ASP/Screenshots/ToReadme/img4.png)
 ![Text](ASP/Screenshots/ToReadme/img5.png)
 ![Text](ASP/Screenshots/ToReadme/img6.png)
