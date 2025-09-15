@@ -39,11 +39,23 @@ document.addEventListener('DOMContentLoaded', e => {
     let buttonCheckout = document.getElementById('button-checkout-cart');
     if (buttonCheckout) { buttonCheckout.onclick = checkoutCartClick; }
     
-    const button = document.getElementById('discard-cart-button');
+    let button = document.getElementById('discard-cart-button');
     if (button) button.onclick = discardCartClick;
-   
+
+    button = document.getElementById('button-repeat-cart');
+    if (button) button.onclick = repeatCartClick;
 
 });
+
+function repeatCartClick(e)
+{
+
+    fetch("/api/cart/repeat/" + e.target.getAttribute("data-cart-id"), {
+        method: 'POST'
+    }).then(r => r.json()).then(j => {
+        console.log(j);
+    });
+}
 
 function showDiscardCartModal()
 {

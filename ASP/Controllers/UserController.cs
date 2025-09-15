@@ -227,6 +227,7 @@ namespace ASP.Controllers
                     {
                         model.IsPersonal = true;
                         model.Birthdate = userAccess.UserData.Birthdate;
+                        model.Carts = _dataAccessor.GetCarts(userAccess.UserId, withDeleted: true);
                     }
                     else // Someone's else profile
                     {

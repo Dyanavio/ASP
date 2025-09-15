@@ -88,6 +88,19 @@ namespace ASP.Controllers.Api
         }
 
 
+        [HttpPost("repeat/{id}")]
+        public RestResponse RepeatCart([FromRoute] string id)
+        {
+            //response.Meta.ResourceUrl = $"/api/cart/repeat/{id}";
+            //response.Meta.Manipulations = ["POST", "PATCH", "DELETE"];
+            //string methodName = MethodBase.GetCurrentMethod()!.Name;
+            //
+            //ExecuteAuthority((userId) => _dataAccessor.AddToCart(userId, id), nameof(methodName));
+
+            response.Data = id;
+            return response;
+        }
+
         private void ExecuteAuthority(Action<string> action, string caller)
         {
             if (HttpContext.User.Identity?.IsAuthenticated ?? false)

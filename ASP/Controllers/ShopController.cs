@@ -39,14 +39,29 @@ namespace ASP.Controllers
             return View(model);
         }
 
-        public IActionResult Cart()
+        public IActionResult Cart(string? id)
         {
-
             ShopCartPageModel model = new();
             if(HttpContext.User.Identity?.IsAuthenticated ?? false)
             {
                 string? userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.PrimarySid)!.Value;
-                model.ActiveCartItems = _dataAccessor.GetActiveCartItems(userId);
+                if(id == null)
+                {
+                    model.ActiveCartItems = _dataAccessor.GetActiveCartItems(userId);
+                }
+                else
+                {
+                    Data.Entities.Cart? cart;
+                    try
+                    {
+                        cart = _dataAccessor.GetCartById(id);
+                    }
+                    catch { cart = null; }
+                    model.ActiveCartItems = cart?.CartItems;
+                    model.IsActive = cart != null
+                        && cart.PaidAt == null
+                        && cart.DeletedAt == null;
+                }
             }
             
             return View(model);

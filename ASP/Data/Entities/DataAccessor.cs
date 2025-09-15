@@ -184,9 +184,14 @@ namespace ASP.Data.Entities
             var cart = GetActiveCart(userId);
             return cart?.CartItems ?? [];
         }
-        public IEnumerable<Cart> GetCarts()
+        public IEnumerable<Cart> GetCarts(Guid userGuid, bool withDeleted = false)
         {
-            return [];
+            return _dataContext.Carts.Include(cart=>cart.CartItems).ThenInclude(ci => ci.Product).Where(cart => (withDeleted || cart.DeletedAt == null) && cart.UserId == userGuid).AsEnumerable();
+        }
+        public Cart? GetCartById(string cartId)
+        {
+            Guid cartGuid = Guid.Parse(cartId);
+            return _dataContext.Carts.Include(c => c.CartItems).ThenInclude(ci => ci.Product).AsNoTracking().FirstOrDefault(c => c.Id == cartGuid);
         }
         public Cart? GetActiveCart(string userId, bool isEditable = false) 
         {

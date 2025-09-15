@@ -4,11 +4,13 @@
 }
 
 <div class="text-center">
-	<h1 class="display-4">My cart</h1>
+	<h1 class="display-4">@(Model.IsActive ? "My cart" : "Purchase history")</h1>
 </div>
 @if(Model.ActiveCartItems == null)
 {
-	<div class="alert alert-dark" role="alert"><i class="bi bi-bank"></i> IchTamNet. Cart is only available after signing in</div>
+	<div class="alert alert-dark" role="alert"><i class="bi bi-bank"></i>
+		@(Context.User.Identity?.IsAuthenticated ?? false ? "This purchase history does not exits" : "IchTamNet. Cart is only available after signing in")
+		</div>
 }
 else if(Model.ActiveCartItems.Count() == 0)
 {
@@ -18,7 +20,7 @@ else
 {
 	<div class="container">
 
-	
+
 		@foreach(var cartItem in Model.ActiveCartItems)
 		{
 			<div class="item-cart-container mt-1 pb-2">
@@ -60,8 +62,15 @@ else
 			</div>
 			<div class="row mt-5">
 				<div class="col pe-2"><a asp-action="Index" class="w-100 btn btn-dark">To Store</a></div>
-				<div class="col px-2"><button id="button-checkout-cart" class="w-100 btn btn-primary">Buy</button></div>
-				<div class="col ps-2"><button id="button-discard-cart" class="w-100 btn btn-danger">Cancel</button></div>
+				@if(Model.IsActive)
+				{
+					<div class="col px-2"><button id="button-checkout-cart" class="w-100 btn btn-primary">Buy</button></div>
+					<div class="col ps-2"><button id="button-discard-cart" class="w-100 btn btn-danger">Cancel</button></div>
+				}
+				else
+				{
+					<div class="col ps-2"><button id="button-repeat-cart" data-cart-id="@Model?.ActiveCartItems?.First().CartId" class="w-100 btn btn-warning">Repeat</button></div>
+				}
 			</div>
 		</div>
 	</div>

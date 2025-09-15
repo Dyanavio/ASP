@@ -8,7 +8,7 @@
 </div>
 
 <div class="row">
-    <div class="col col-xxl-6 offset-xxl-3      col-xl-8 offset-xl-2        col-md-10 offset-md-1">
+    <div class="col col-xxl-5 offset-xxl-2      col-xl-6 offset-xl-2      col-lg-6      col-md-6       col-sm-10">
 
         @if (Model.IsPersonal == null)
         {
@@ -38,10 +38,29 @@
                     <div class="col"><button id="edit-profile-button" title="Edit personal details" class="btn btn-outline-dark"><i class="bi bi-pen"></i></button></div>
                     <div class="col"><button id="delete-profile-button" title="Delete profiled" class="btn btn-outline-danger"><i class="bi bi-trash3-fill"></i></button></div>
                 </div>
-                
+
             }
         }
 
+    </div>
+
+    <div class="col">
+        <h4>Purchase History</h4>
+        @if (Model.IsPersonal ?? false)
+        {
+            foreach(var cart in Model.Carts.OrderByDescending(c => c.CreatedAt))
+            {
+                string style = "btn-outline-dark";
+                if (cart.PaidAt != null) style = "btn-outline-success";
+                if (cart.DeletedAt != null) style = "btn-outline-danger";
+
+                <a class="btn border @style rounded-2 p-1 m-2" asp-controller="Shop" asp-action="Cart" asp-route-id="@cart.Id">
+                    <i class="bi bi-cart"></i>
+                    @cart.CreatedAt.ToString("dd.MM.yyyy")
+                    @("Items: " + cart.CartItems.Count)
+                </a>
+            }
+        }
 
     </div>
 </div>
