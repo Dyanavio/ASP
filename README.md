@@ -130,46 +130,6 @@ Services are described together with interface. Conclusion: a new minimal servic
 
 DI - Dependency Injection - is a way to realise IoC by passing references to the service objects at the points of injection
 
-### Middleware brief scheme
-#### HTTP Request
-Browser                                                                                        Server
-     HTTP ------------------------------------------------------------------------------------> [WebServer: IIS/Kestrel]
-                                                                                                Forms HttpContext {
-          Path        Protocol                                                                              Request: {
-POST   /Home/Privacy   HTTP/1.1                     1st part                                                    Method: "POST"  
-Host: localhost:1234                                2nd part: Headers                                           Path: "/Home/Privacy"
-Connection: close                                                                                               Headers: [ {Connection: close }], ...
-Authorization: Basic 2esdweyewt324=                                                                             Body: "x=10&y=20    
-Content-Type: application/x-www-form-urlencoded     Required if there is a body                              }
-                                                                                                             Response: {...}
-x=10&y=20                                           3rd part: Body                                           User: null
-                                                                                                             Session: null
-                                                                                                             WebSocket: null
-                                                                                                            }
-                                                                                                             | Middleware
-                                                                                                            userSession
-                                                                                                             |
-                                                                                                             HttpContext.Session = ...
-                                                                                                             |
-                                                                                                            AuthSessionMiddleware
-                                                                                                             |
-                                                                                                             HttpContext.User = HttpContext.Session[]
-                                                                                                             |
-                                                                                                            return Redirect()
-                                                                                                             |
-                                                                                                             HttpContext.Response:{
-                                                                                                                     StatusCode: 302
-                                                                                                                     Location: "/Home/"
-                                                                                                             }
-                                                                                                             [WebServer: IIS/Kestrel]
-              <---------------------------------------------------------------------------------------------
-                                                HTTP/1.1 302 Found
-                                                Connection: close
-                                                Location: "/Home"
-                                                Server: "Kestrel"
-
-
-
 ### SPA
 SPA technology provides minimum number of page refreshes. Content is changes via JS or its frameworks.  
 Actually, the page remains unchanged (Single) while its content is redrawn.
