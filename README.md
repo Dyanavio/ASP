@@ -88,13 +88,13 @@ If the model type is complex (collection) or name is impossible, then template i
 **Differences between MVC and API controllers**
 
 + MVC: one method (usually GET) and different addresses (You can reach ONE address with ONE method, action is determined by address)
-- GET /home/privacy -> HomeController::Privacy()
-- POST /home/index -> HomeController::Index()   (Post makes no difference, we will end up on Index)
+GET /home/privacy -> HomeController::Privacy()
+POST /home/index -> HomeController::Index()   (Post makes no difference, we will end up on Index)
 
 + API: one address, but different methods
-- GET  /api/product -> ProductController::ProductsList()
-- POST /api/product -> ProductController::CreateProduct()
-- PUT  /api/product
+GET  /api/product -> ProductController::ProductsList()
+POST /api/product -> ProductController::CreateProduct()
+PUT  /api/product
 
 -----------------------------------------------------------------------------------------
 
