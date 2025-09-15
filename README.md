@@ -49,8 +49,12 @@ Condition and cycle operators: &commat;if{}, &commat;if{ }else{ }, &commat;switc
 
 ![Text](ASP/Screenshots/ToReadme/img1.png)
 
-
+### Structure
+All entities have a full CRUD cycle, meaning that on ordinary user can  register (create), view (read), edit(update) and delete their account. 
+Some with moderator role or higher can do the same with products and their groups
 ![Text](ASP/Screenshots/ToReadme/img2.png)
+
+
 ![Text](ASP/Screenshots/ToReadme/img3.png)
 ![Text](ASP/Screenshots/ToReadme/img4.png)
 ![Text](ASP/Screenshots/ToReadme/img5.png)
