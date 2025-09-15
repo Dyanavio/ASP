@@ -64,10 +64,14 @@ All CRUD processes are followed by validation
 
 After signing in you will be able to view your own profile and purchase history
 ![Text](ASP/Screenshots/ToReadme/img5.png)
-![Text](ASP/Screenshots/ToReadme/img6.png)
-![Text](ASP/Screenshots/ToReadme/img7.png)
-![Text](ASP/Screenshots/ToReadme/img8.png)
 ![Text](ASP/Screenshots/ToReadme/img9.png)
+
+![Text](ASP/Screenshots/ToReadme/img6.png)
+
+![Text](ASP/Screenshots/ToReadme/img7.png)
+
+![Text](ASP/Screenshots/ToReadme/img8.png)
+
 ![Text](ASP/Screenshots/ToReadme/img10.png)
 
 ### Display
