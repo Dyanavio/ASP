@@ -15,6 +15,37 @@ Throughout the course the following was covered:
 
 So here I will list what was implemented as well as some theory I was able to note.
 
+### Razor
+Razor is a technology that aims to combine a programming language and a markup language. Its base is &commat; that is substituted by the &amp;commant; entity in HTML
+
+#### Expressions
+Expressions are the commands that have result. In the sense of Razor this result is substituted in the place where it was mentioned.
+Syntax:
+```
+&commat;(expression) e.g.
+&commat;(2 + 3) = @(2 + 3)
+In that sense, the construction <code>&commat;() can be compared to the output operator print(expression)
+```
+
+#### Statements
+Statements do not have visual results (nothing is printed). Declared via syntax:
+```
+&commat;{statements}, e.g.
+&commat;{
+	int x = 10;
+	var random = new Random();
+}
+```
+
+Short form for expressions &commat;expression is allowed if the expressions do not have separators, like
+&commat;x = @x
+&commat;random.Next() = @random.Next()
+&commat;x + 1 = @x + 1
+
+
+<h2>Control Statements</h2>
+Condition and cycle operators: &commat;if{}, &commat;if{ }else{ }, &commat;switch, &commat;for, &commat;while, &commat;foreach, ...
+
 
 ![Text](ASP/Screenshots/ToReadme/img1.png)
 ![Text](ASP/Screenshots/ToReadme/img2.png)
