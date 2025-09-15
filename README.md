@@ -38,12 +38,13 @@ Statements do not have visual results (nothing is printed). Declared via syntax:
 ```
 
 Short form for expressions &commat;expression is allowed if the expressions do not have separators, like
-&commat;x = @x
-&commat;random.Next() = @random.Next()
-&commat;x + 1 = @x + 1
+```
+@x = @x
+@random.Next() = @random.Next()
+@x + 1 = @x + 1
+```
 
-
-<h2>Control Statements</h2>
+Control Statements<
 Condition and cycle operators: &commat;if{}, &commat;if{ }else{ }, &commat;switch, &commat;for, &commat;while, &commat;foreach, ...
 
 
