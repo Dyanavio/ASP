@@ -27,11 +27,13 @@ So here I will list what was implemented as well as some theory I was able to no
 ![Text](ASP/Screenshots/ToReadme/img9.png)
 ![Text](ASP/Screenshots/ToReadme/img10.png)
 
+### Display
 Elements of different lists are displayed via Display templates.
 Display templates are ways of separating layout of a certain object (model). 
 One creates DisplayTemplates (name is important) directory in View directory (Views/Shop).
 Then one creates View itself. If name corresponds to the type name of the model then the choice of template is automatic
 If the model type is complex (collection) or name is impossible, then template is declared directly @Html.FisplayFor(m => group, "Tepmlate name")
+
 ![Text](ASP/Screenshots/ToReadme/img14.png)
 
 
