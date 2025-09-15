@@ -34,6 +34,13 @@ One creates DisplayTemplates (name is important) directory in View directory (Vi
 Then one creates View itself. If name corresponds to the type name of the model then the choice of template is automatic  
 If the model type is complex (collection) or name is impossible, then template is declared directly @Html.FisplayFor(m => group, "Tepmlate name")
 
+```
+@foreach(var group in Model.ProductGroups)
+{
+    @Html.DisplayFor(m => group);
+}
+```
+
 ![Text](ASP/Screenshots/ToReadme/img14.png)
 
 
