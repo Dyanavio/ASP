@@ -22,16 +22,16 @@ Razor is a technology that aims to combine a programming language and a markup l
 Expressions are the commands that have result. In the sense of Razor this result is substituted in the place where it was mentioned.
 Syntax:
 ```
-&commat;(expression) e.g.
-&commat;(2 + 3) = @(2 + 3)
-In that sense, the construction <code>&commat;() can be compared to the output operator print(expression)
+@(expression) e.g.
+@(2 + 3) = @(2 + 3)
+In that sense, the construction @() can be compared to the output operator print(expression)
 ```
 
 #### Statements
 Statements do not have visual results (nothing is printed). Declared via syntax:
 ```
-&commat;{statements}, e.g.
-&commat;{
+@{statements}, e.g.
+@{
 	int x = 10;
 	var random = new Random();
 }
