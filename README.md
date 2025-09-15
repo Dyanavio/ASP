@@ -84,6 +84,22 @@ If the model type is complex (collection) or name is impossible, then template i
 
 ![Text](ASP/Screenshots/ToReadme/img14.png)
 
+#### MVC and API
+**Differences between MVC and API controllers**
+
++ MVC: one method (usually GET) and different addresses (You can reach ONE address with ONE method, action is determined by address)
+- GET /home/privacy -> HomeController::Privacy()
+- POST /home/index -> HomeController::Index()   (Post makes no difference, we will end up on Index)
+
++ API: one address, but different methods
+- GET  /api/product -> ProductController::ProductsList()
+- POST /api/product -> ProductController::CreateProduct()
+- PUT  /api/product
+
+-----------------------------------------------------------------------------------------
+
+MVC - returns IActionResult
+API - returns objects of an arbitrary type that ASP changes them to JSON (except for string, it changes to plain/text)
 
 ![Text](ASP/Screenshots/ToReadme/img11.png)
 ![Text](ASP/Screenshots/ToReadme/img12.png)
