@@ -61,6 +61,8 @@ This is what expects user befire creating their account. _Do not mind the theory
 
 All CRUD processes are followed by validation
 ![Text](ASP/Screenshots/ToReadme/img4.png)
+
+After signing in you will be able to view your own profile and purchase history
 ![Text](ASP/Screenshots/ToReadme/img5.png)
 ![Text](ASP/Screenshots/ToReadme/img6.png)
 ![Text](ASP/Screenshots/ToReadme/img7.png)
