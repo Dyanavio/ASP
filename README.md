@@ -13,6 +13,8 @@ Throughout the course the following was covered:
 * Filters
 * Differences between MVC and API controllers
 
+So here I will list what was implemented as well as some theory I was able to note.
+
 
 ![Text](ASP/Screenshots/ToReadme/img1.png)
 ![Text](ASP/Screenshots/ToReadme/img2.png)
@@ -26,4 +28,6 @@ Throughout the course the following was covered:
 ![Text](ASP/Screenshots/ToReadme/img10.png)
 ![Text](ASP/Screenshots/ToReadme/img11.png)
 ![Text](ASP/Screenshots/ToReadme/img12.png)
+
+And of course there would be some tabs created purely for practical uses...
 ![Text](ASP/Screenshots/ToReadme/img13.png)
