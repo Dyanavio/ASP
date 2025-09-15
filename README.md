@@ -70,8 +70,9 @@ Here you can edit your data and restore previous purchases
 As was previously mentioned, all tools for moderators to manage the shop are at their disposal  
 ![Text](ASP/Screenshots/ToReadme/img6.png)
 
-Here is the product's page  
+Here is the product's page. For swift navigation there is a carousel of groups with respective links  
 ![Text](ASP/Screenshots/ToReadme/img7.png)
+
 
 ![Text](ASP/Screenshots/ToReadme/img8.png)
 
