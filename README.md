@@ -67,8 +67,10 @@ After signing in you will be able to view your own profile and purchase history
 Here you can edit your data and restore previous purchases  
 ![Text](ASP/Screenshots/ToReadme/img9.png)
 
+As was previously mentioned, all tools for moderators to manage the shop are at their disposal  
 ![Text](ASP/Screenshots/ToReadme/img6.png)
 
+Here is the product's page  
 ![Text](ASP/Screenshots/ToReadme/img7.png)
 
 ![Text](ASP/Screenshots/ToReadme/img8.png)
